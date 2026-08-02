@@ -1,0 +1,66 @@
+.floatBtn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(216, 92, 138, 0.4);
+  transition: var(--transition-smooth);
+  text-decoration: none;
+}
+
+.floatBtn:hover {
+  background-color: var(--hover-color);
+  box-shadow: 0 8px 35px rgba(216, 92, 138, 0.6);
+}
+
+.icon {
+  stroke-width: 2.25px;
+}
+
+.tooltip {
+  position: absolute;
+  right: 70px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px);
+  transition: var(--transition-smooth);
+  pointer-events: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.floatBtn:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+  .floatBtn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .tooltip {
+    display: none; /* Hide tooltips on mobile */
+  }
+}

@@ -1,0 +1,470 @@
+.section {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+  position: relative;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: var(--section-padding-mobile);
+    padding-bottom: var(--section-padding-mobile);
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.italicPink {
+  font-style: italic;
+  color: var(--primary-color);
+}
+
+/* 3D Perspective Carousel Container */
+.carouselContainer {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  perspective: 1200px;
+}
+
+.slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 560px;
+  position: relative;
+}
+
+.slideCard {
+  position: absolute;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 5;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 3D Positions */
+.leftCard {
+  transform: translateX(-230px) scale(0.8) rotateY(18deg);
+  z-index: 10;
+  opacity: 0.45;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.rightCard {
+  transform: translateX(230px) scale(0.8) rotateY(-18deg);
+  z-index: 10;
+  opacity: 0.45;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.activeCard {
+  transform: translateX(0) scale(1.05) rotateY(0deg); /* Slightly larger active state */
+  z-index: 20;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.hiddenCard {
+  transform: scale(0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Premium 3D Phone Mockup Structure */
+.phoneMockup {
+  width: 255px;
+  height: 510px;
+  background-color: #0d0d0f;
+  border: 10px solid #1c1c1e; /* Sleek metal border */
+  border-radius: 42px;
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 12px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.12); /* Beveled glass highlight */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-smooth);
+}
+
+.activeCard:hover .phoneMockup {
+  border-color: #2c2c2e;
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.9), 
+    0 0 40px rgba(216, 92, 138, 0.2),
+    inset 0 0 15px rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(216, 92, 138, 0.3); /* Subtle pink glow outline */
+}
+
+/* Physical Side Buttons */
+.volumeButtons {
+  position: absolute;
+  left: -14px;
+  top: 90px;
+  width: 4px;
+  height: 35px;
+  background-color: #2c2c2e;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  z-index: 2;
+  box-shadow: -1px 2px 3px rgba(0,0,0,0.5);
+  transition: var(--transition-smooth);
+}
+
+.volumeButtons::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 45px;
+  width: 4px;
+  height: 35px;
+  background-color: #2c2c2e;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  box-shadow: -1px 2px 3px rgba(0,0,0,0.5);
+}
+
+.powerButton {
+  position: absolute;
+  right: -14px;
+  top: 115px;
+  width: 4px;
+  height: 55px;
+  background-color: #2c2c2e;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  z-index: 2;
+  box-shadow: 1px 2px 3px rgba(0,0,0,0.5);
+  transition: var(--transition-smooth);
+}
+
+.activeCard:hover .volumeButtons,
+.activeCard:hover .volumeButtons::after,
+.activeCard:hover .powerButton {
+  background-color: var(--primary-color); /* Highlight buttons on active hover */
+}
+
+/* Sleek dynamic island inside the screen */
+.phoneHeader {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: none;
+}
+
+.dynamicIsland {
+  width: 75px;
+  height: 18px;
+  background-color: #000000;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cameraLens {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #1a233a 0%, #04060b 85%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.indicatorDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: #30d158; /* iOS active camera green dot indicator */
+  opacity: 0.8;
+  box-shadow: 0 0 4px #30d158;
+}
+
+.phoneScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #0b141a; /* Matches WhatsApp Dark Mode exactly */
+  border-radius: 32px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.printImage {
+  object-fit: contain;
+  object-position: center;
+  background-color: #0b141a; /* Pure WhatsApp Dark Mode */
+  padding: 8px; /* Safe padding for notches */
+}
+
+/* Glass shine/reflection overlay */
+.phoneReflection {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 120%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+  z-index: 24;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.activeCard:hover .phoneReflection {
+  transform: skewX(-25deg) translateX(250%);
+}
+
+/* Hover Zoom Overlay */
+.zoomOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(9, 9, 9, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: var(--transition-fast);
+  z-index: 25;
+}
+
+.zoomOverlay span {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-color);
+  letter-spacing: 0.05em;
+}
+
+.zoomIcon {
+  color: var(--primary-color);
+}
+
+.activeCard:hover .zoomOverlay {
+  opacity: 1;
+}
+
+/* Slider Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.controlBtn {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.controlBtn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: rgba(216, 92, 138, 0.05);
+}
+
+.dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.activeDot {
+  background-color: var(--primary-color);
+  width: 20px;
+}
+
+/* Lightbox Modal */
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(9, 9, 9, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+
+.lightboxContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.lightboxHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  max-width: 360px;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lightboxImageWrapper {
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  display: flex;
+}
+
+.lightboxImage {
+  max-height: 75vh;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .slider {
+    height: 460px;
+  }
+  
+  .leftCard {
+    transform: translateX(-110px) scale(0.7) rotateY(15deg);
+  }
+
+  .rightCard {
+    transform: translateX(110px) scale(0.7) rotateY(-15deg);
+  }
+  
+  .phoneMockup {
+    width: 200px;
+    height: 400px;
+    border-width: 8px;
+    border-radius: 32px;
+  }
+  
+  .phoneHeader {
+    top: 8px;
+  }
+
+  .dynamicIsland {
+    width: 60px;
+    height: 14px;
+    padding: 0 8px;
+  }
+
+  .cameraLens {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .indicatorDot {
+    width: 2px;
+    height: 2px;
+  }
+
+  .volumeButtons, .powerButton {
+    display: none; /* Hide hardware buttons on mobile to avoid overcrowding */
+  }
+}
+
+@media (max-width: 480px) {
+  .slider {
+    height: 400px;
+  }
+
+  .leftCard {
+    transform: translateX(-70px) scale(0.65) rotateY(10deg);
+  }
+
+  .rightCard {
+    transform: translateX(70px) scale(0.65) rotateY(-10deg);
+  }
+  
+  .phoneMockup {
+    width: 170px;
+    height: 340px;
+    border-width: 6px;
+    border-radius: 26px;
+  }
+}

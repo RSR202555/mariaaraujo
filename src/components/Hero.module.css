@@ -1,0 +1,242 @@
+.heroSection {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 8rem;
+  padding-bottom: 5rem;
+  background-color: var(--bg-color);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+}
+
+.content {
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.badgeWrapper {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 4rem;
+  line-height: 1.05;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.highlight {
+  color: var(--primary-color);
+}
+
+.bullets {
+  list-style: none;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bullets li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.bulletDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+}
+
+.linkSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.linkSecondary:hover {
+  color: var(--primary-color);
+  gap: 0.75rem;
+}
+
+/* Indicators / Stats */
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 2rem;
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-family: var(--font-title);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-color);
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+.statDivider {
+  height: 2rem;
+  width: 1px;
+  background-color: var(--border-color);
+}
+
+/* Image Lado Direito (60% da Tela) */
+.imageContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  z-index: 1;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Fades para mesclagem premium */
+.fadeOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradiente da Esquerda para a Direita - esconde a borda da foto e mescla com background */
+  background: linear-gradient(90deg, 
+    #090909 0%, 
+    #090909 15%, 
+    rgba(9, 9, 9, 0.7) 45%, 
+    rgba(9, 9, 9, 0.2) 75%, 
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.fadeOverlay::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  /* Gradiente de Baixo para Cima - mescla a parte inferior com a próxima seção */
+  background: linear-gradient(0deg, #090909 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .heroSection {
+    min-height: auto;
+    padding-top: 10rem;
+    padding-bottom: 4rem;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+  }
+
+  .imageContainer {
+    position: relative;
+    width: 100%;
+    height: 450px;
+    margin-top: 2rem;
+  }
+
+  .fadeOverlay {
+    /* Gradiente Vertical para telas menores */
+    background: linear-gradient(180deg, 
+      #090909 0%, 
+      rgba(9, 9, 9, 0.5) 30%, 
+      transparent 100%
+    );
+  }
+
+  .content {
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .actions {
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .statDivider {
+    display: none;
+  }
+
+  .imageContainer {
+    height: 350px;
+  }
+}

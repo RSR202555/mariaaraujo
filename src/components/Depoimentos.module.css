@@ -1,0 +1,111 @@
+.header {
+  margin-bottom: 5rem;
+}
+
+.italicPink {
+  font-style: italic;
+  color: var(--primary-color);
+}
+
+/* Editorial layout with vertical dividing borders instead of cards */
+.editorialGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+  position: relative;
+}
+
+.editorialItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  padding-top: 1rem;
+}
+
+/* Vertical dividers on desktop */
+.editorialItem:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -2rem;
+  width: 1px;
+  height: 100%;
+  background-color: var(--border-color);
+}
+
+.blockquote {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--text-color);
+  line-height: 1.6;
+  position: relative;
+  font-weight: 400;
+  margin-bottom: 2.5rem;
+}
+
+.quoteMark {
+  font-family: var(--font-title);
+  font-size: 4rem;
+  color: rgba(216, 92, 138, 0.15);
+  position: absolute;
+  top: -2.5rem;
+  left: -1rem;
+  pointer-events: none;
+  font-weight: 800;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.author {
+  font-family: var(--font-title);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.role {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.duration {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .editorialGrid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .editorialItem {
+    padding-top: 0;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .editorialItem:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .editorialItem:not(:first-child)::before {
+    display: none;
+  }
+}
