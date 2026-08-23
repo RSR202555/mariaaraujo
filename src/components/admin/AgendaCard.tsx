@@ -43,7 +43,7 @@ const defaultAppointments: AgendaAppointment[] = [
   },
 ];
 
-export function AgendaCard({ appointments = defaultAppointments }: AgendaCardProps) {
+export function AgendaCard({ appointments = [] }: AgendaCardProps) {
   return (
     <div className="bg-[#141414] border border-[#262626] rounded-2xl p-5 text-left space-y-4 shadow-lg">
       <div className="flex items-center justify-between border-b border-[#262626] pb-3">
@@ -58,42 +58,49 @@ export function AgendaCard({ appointments = defaultAppointments }: AgendaCardPro
         </span>
       </div>
 
-      <div className="space-y-2">
-        {appointments.map((item) => (
-          <div
-            key={item.id}
-            className="p-2.5 rounded-xl bg-[#090909] border border-[#262626] flex items-center justify-between hover:border-[#333] transition-colors"
-          >
-            <div className="flex items-center space-x-3 min-w-0">
-              <span className="text-[0.7rem] font-extrabold text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded-md shrink-0">
-                {item.time}
-              </span>
-              <Avatar className="h-7 w-7 border border-white/10 shrink-0">
-                <AvatarImage src={item.studentAvatar} alt={item.studentName} />
-                <AvatarFallback>AL</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <span className="text-xs font-bold text-white block truncate">
-                  {item.studentName}
-                </span>
-                <span className="text-[0.65rem] text-muted-foreground block truncate">
-                  {item.type}
-                </span>
-              </div>
-            </div>
-
-            <span
-              className={`text-[0.62rem] font-bold uppercase px-2 py-0.5 rounded-md ${
-                item.status === "confirmado"
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-              }`}
+      {appointments.length === 0 ? (
+        <div className="p-5 text-center space-y-1 bg-[#090909] border border-[#262626] rounded-xl">
+          <p className="text-xs font-semibold text-gray-300">Nenhum compromisso agendado para hoje</p>
+          <p className="text-[0.68rem] text-muted-foreground">Avaliações e encontros do dia serão exibidos aqui.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {appointments.map((item) => (
+            <div
+              key={item.id}
+              className="p-2.5 rounded-xl bg-[#090909] border border-[#262626] flex items-center justify-between hover:border-[#333] transition-colors"
             >
-              {item.status}
-            </span>
-          </div>
-        ))}
-      </div>
+              <div className="flex items-center space-x-3 min-w-0">
+                <span className="text-[0.7rem] font-extrabold text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded-md shrink-0">
+                  {item.time}
+                </span>
+                <Avatar className="h-7 w-7 border border-white/10 shrink-0">
+                  <AvatarImage src={item.studentAvatar} alt={item.studentName} />
+                  <AvatarFallback>AL</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white block truncate">
+                    {item.studentName}
+                  </span>
+                  <span className="text-[0.65rem] text-muted-foreground block truncate">
+                    {item.type}
+                  </span>
+                </div>
+              </div>
+
+              <span
+                className={`text-[0.62rem] font-bold uppercase px-2 py-0.5 rounded-md ${
+                  item.status === "confirmado"
+                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                    : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                }`}
+              >
+                {item.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

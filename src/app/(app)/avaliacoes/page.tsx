@@ -1,20 +1,18 @@
+"use client";
+
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ClipboardList } from "lucide-react";
+import { AvaliacoesFeature } from "@/features/student/AvaliacoesFeature";
 
 export default function AvaliacoesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Anamnese & Check-ins"
-        title="Avaliações"
-        description="Questionários de saúde, medição perimétrica e feedback de check-in."
+        badge="Avaliações Físicas VIP"
+        title="Avaliações & Anamnese"
+        description="Histórico de avaliações físicas, formulário de saúde e dossiês de evolução enviados pela Maria Araújo."
       />
-      <EmptyState
-        icon={ClipboardList}
-        title="Módulo de Anamnese"
-        description="Esta rota do App Shell receberá o formulário de anamnese e check-in periódico."
-      />
+
+      <AvaliacoesFeature />
     </div>
   );
 }

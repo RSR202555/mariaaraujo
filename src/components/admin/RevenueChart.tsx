@@ -10,16 +10,16 @@ interface RevenueChartProps {
 }
 
 const defaultRevenue: RevenueData = {
-  currentMonthRevenue: 48950,
-  totalRevenue: 385400,
-  averageTicket: 397,
+  currentMonthRevenue: 0,
+  totalRevenue: 0,
+  averageTicket: 0,
   monthlyHistory: [
-    { month: "Set", revenue: 32400, salesCount: 82 },
-    { month: "Out", revenue: 38900, salesCount: 98 },
-    { month: "Nov", revenue: 41200, salesCount: 104 },
-    { month: "Dez", revenue: 45600, salesCount: 115 },
-    { month: "Jan", revenue: 46800, salesCount: 118 },
-    { month: "Fev", revenue: 48950, salesCount: 123 },
+    { month: "Jan", revenue: 0, salesCount: 0 },
+    { month: "Fev", revenue: 0, salesCount: 0 },
+    { month: "Mar", revenue: 0, salesCount: 0 },
+    { month: "Abr", revenue: 0, salesCount: 0 },
+    { month: "Mai", revenue: 0, salesCount: 0 },
+    { month: "Jun", revenue: 0, salesCount: 0 },
   ],
 };
 

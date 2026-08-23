@@ -31,7 +31,7 @@ const defaultNotifications: AdminNotification[] = [
   },
 ];
 
-export function NotificationPanel({ notifications = defaultNotifications }: NotificationPanelProps) {
+export function NotificationPanel({ notifications = [] }: NotificationPanelProps) {
   return (
     <div className="bg-[#141414] border border-[#262626] rounded-3xl p-6 sm:p-7 text-left space-y-5 shadow-2xl group hover:border-primary/40 transition-colors">
       <div className="flex items-center justify-between">
@@ -46,30 +46,37 @@ export function NotificationPanel({ notifications = defaultNotifications }: Noti
         </span>
       </div>
 
-      <div className="space-y-2.5">
-        {notifications.map((item) => (
-          <div
-            key={item.id}
-            className={`p-3 rounded-2xl border transition-all flex items-start space-x-3 ${
-              item.unread
-                ? "bg-[#090909] border-primary/30"
-                : "bg-[#090909]/50 border-[#262626] opacity-80"
-            }`}
-          >
-            <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0 mt-0.5">
-              <Bell className="h-4 w-4" />
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white truncate">{item.title}</span>
-                <span className="text-[0.62rem] text-muted-foreground">{item.timeAgo}</span>
+      {notifications.length === 0 ? (
+        <div className="p-5 text-center space-y-1 bg-[#090909] border border-[#262626] rounded-2xl">
+          <p className="text-xs font-semibold text-gray-300">Nenhuma notificação pendente</p>
+          <p className="text-[0.68rem] text-muted-foreground">Alertas de pagamentos e atualizações do sistema surgirão aqui.</p>
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {notifications.map((item) => (
+            <div
+              key={item.id}
+              className={`p-3 rounded-2xl border transition-all flex items-start space-x-3 ${
+                item.unread
+                  ? "bg-[#090909] border-primary/30"
+                  : "bg-[#090909]/50 border-[#262626] opacity-80"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                <Bell className="h-4 w-4" />
               </div>
-              <p className="text-[0.7rem] text-muted-foreground truncate mt-0.5">{item.description}</p>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white truncate">{item.title}</span>
+                  <span className="text-[0.62rem] text-muted-foreground">{item.timeAgo}</span>
+                </div>
+                <p className="text-[0.7rem] text-muted-foreground truncate mt-0.5">{item.description}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

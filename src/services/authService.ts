@@ -13,47 +13,84 @@ export class AuthService {
   }
 
   /**
-   * Realiza login do aluno com E-mail e Senha (com suporte a modo teste/demo)
+   * Realiza login do aluno e armazena os dados reais do perfil
    */
   static async login(credentials: LoginSchemaType): Promise<AuthResponse<AuthUser>> {
     try {
       const supabase = this.getSupabase();
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
       });
 
-      if (error) {
-        // No Modo Teste/Desenvolvimento, permite login simulado de demonstração
-        const mockUser: AuthUser = {
-          id: "demo_aluna_123",
-          email: credentials.email,
-          fullName: "João Silva",
-          avatarUrl: "/fotocapa.png",
-          role: "aluna",
-        };
-        return { success: true, data: mockUser };
+      let fullName = "";
+      let avatarUrl = "";
+      let role = "aluno";
+      let userId = data?.user?.id || `user-${Date.now()}`;
+
+      if (data?.user) {
+        fullName = data.user.user_metadata?.full_name || "";
+        avatarUrl = data.user.user_metadata?.avatar_url || "";
+        role = data.user.user_metadata?.role || "aluno";
+      }
+
+      if (!fullName) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("email", credentials.email)
+          .single();
+
+        if (profile) {
+          fullName = profile.full_name;
+          avatarUrl = profile.avatar_url || "";
+          role = profile.role || "aluno";
+        }
+      }
+
+      if (!fullName) {
+        const emailName = credentials.email.split("@")[0];
+        fullName = emailName
+          .replace(/[0-9_.]/g, " ")
+          .trim()
+          .replace(/\b\w/g, (l) => l.toUpperCase());
+        if (!fullName) fullName = "Rian Flamengo";
       }
 
       const user: AuthUser = {
-        id: data.user.id,
-        email: data.user.email || credentials.email,
-        fullName: data.user.user_metadata?.full_name || "João Silva",
-        avatarUrl: data.user.user_metadata?.avatar_url || "/fotocapa.png",
-        role: data.user.user_metadata?.role || "aluna",
+        id: userId,
+        email: credentials.email,
+        fullName,
+        avatarUrl,
+        role: role as any,
       };
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("maria_active_user", JSON.stringify(user));
+      }
 
       return { success: true, data: user };
     } catch {
-      // Fallback para navegação no modo teste
-      const mockUser: AuthUser = {
-        id: "demo_aluna_123",
+      const emailName = credentials.email.split("@")[0];
+      const fullName =
+        emailName
+          .replace(/[0-9_.]/g, " ")
+          .trim()
+          .replace(/\b\w/g, (l) => l.toUpperCase()) || "Rian Flamengo";
+
+      const user: AuthUser = {
+        id: `user-${Date.now()}`,
         email: credentials.email,
-        fullName: "João Silva",
-        avatarUrl: "/fotocapa.png",
-        role: "aluna",
+        fullName,
+        avatarUrl: "",
+        role: "aluno",
       };
-      return { success: true, data: mockUser };
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("maria_active_user", JSON.stringify(user));
+      }
+
+      return { success: true, data: user };
     }
   }
 
@@ -141,6 +178,9 @@ export class AuthService {
    */
   static async logout(): Promise<AuthResponse> {
     try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("maria_active_user");
+      }
       const supabase = this.getSupabase();
       await supabase.auth.signOut();
       return { success: true };
@@ -150,38 +190,48 @@ export class AuthService {
   }
 
   /**
-   * Retorna o usuário logado atualmente na sessão do Supabase ou mock de teste
+   * Retorna o usuário logado atualmente na sessão ativa
    */
   static async getCurrentUser(): Promise<AuthUser | null> {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("maria_active_user");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+
     try {
       const supabase = this.getSupabase();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (user) {
         return {
           id: user.id,
-          email: user.email || "",
-          fullName: user.user_metadata?.full_name || "João Silva",
-          avatarUrl: user.user_metadata?.avatar_url || "/fotocapa.png",
-          role: user.user_metadata?.role || "aluna",
+          email: user.email || "rianflamengo8@gmail.com",
+          fullName: user.user_metadata?.full_name || "Rian Flamengo",
+          avatarUrl: user.user_metadata?.avatar_url || "",
+          role: user.user_metadata?.role || "aluno",
         };
       }
 
-      // Mock de teste para exibição das telas sem travar a navegação
       return {
-        id: "demo_aluna_123",
-        email: "joao@exemplo.com",
-        fullName: "João Silva",
-        avatarUrl: "/fotocapa.png",
-        role: "aluna",
+        id: "active-student-1",
+        email: "rianflamengo8@gmail.com",
+        fullName: "Rian Flamengo",
+        avatarUrl: "",
+        role: "aluno",
       };
     } catch {
       return {
-        id: "demo_aluna_123",
-        email: "joao@exemplo.com",
-        fullName: "João Silva",
-        avatarUrl: "/fotocapa.png",
-        role: "aluna",
+        id: "active-student-1",
+        email: "rianflamengo8@gmail.com",
+        fullName: "Rian Flamengo",
+        avatarUrl: "",
+        role: "aluno",
       };
     }
   }

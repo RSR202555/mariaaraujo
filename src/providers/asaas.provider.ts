@@ -120,4 +120,15 @@ export class AsaasProvider {
     if (!expectedToken) return true; // Em dev se não configurado
     return reqToken === expectedToken;
   }
+
+  /**
+   * Retorna o status de configuração da integração com o ASAAS
+   */
+  static getStatus() {
+    return {
+      configured: Boolean(this.apiKey),
+      environment: this.apiUrl.includes('sandbox') ? 'sandbox' : 'production',
+      apiUrl: this.apiUrl,
+    };
+  }
 }

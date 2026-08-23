@@ -1,24 +1,49 @@
 -- ==========================================================
 -- MARIA ARAÚJO PERSONAL - DATABASE SCHEMA MIGRATION (001)
--- PostgreSQL / Supabase Migration: 25 Tables, Indexes, Triggers & Auth Sync
+-- PostgreSQL / Supabase Migration: 26 Tables, Indexes, Triggers & Auth Sync
 -- ==========================================================
 
 -- Enable Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Enum Types
-CREATE TYPE user_role AS ENUM ('ADMIN', 'PERSONAL', 'ALUNO');
-CREATE TYPE consultancy_status AS ENUM ('PENDING', 'ACTIVE', 'PAUSED', 'EXPIRED', 'CANCELLED');
-CREATE TYPE subscription_status AS ENUM ('PENDING', 'ACTIVE', 'OVERDUE', 'CANCELLED', 'EXPIRED');
-CREATE TYPE payment_status AS ENUM ('PENDING', 'CONFIRMED', 'RECEIVED', 'OVERDUE', 'REFUNDED', 'FAILED');
-CREATE TYPE payment_method AS ENUM ('PIX', 'CREDIT_CARD', 'BOLETO');
-CREATE TYPE anamnesis_status AS ENUM ('DRAFT', 'SUBMITTED', 'REVIEWED');
-CREATE TYPE evaluation_request_status AS ENUM ('PENDING', 'APPROVED', 'COMPLETED', 'CANCELLED');
-CREATE TYPE photo_type AS ENUM ('FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT', 'EXTRA');
-CREATE TYPE protocol_status AS ENUM ('DRAFT', 'ACTIVE', 'ARCHIVED');
-CREATE TYPE notification_type AS ENUM ('SYSTEM', 'PAYMENT', 'PROTOCOL', 'EVALUATION', 'MESSAGE');
-CREATE TYPE appointment_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED', 'RESCHEDULED');
+-- Enum Types (Idempotent Creation)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+    CREATE TYPE user_role AS ENUM ('ADMIN', 'PERSONAL', 'ALUNO');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'consultancy_status') THEN
+    CREATE TYPE consultancy_status AS ENUM ('PENDING', 'ACTIVE', 'PAUSED', 'EXPIRED', 'CANCELLED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'subscription_status') THEN
+    CREATE TYPE subscription_status AS ENUM ('PENDING', 'ACTIVE', 'OVERDUE', 'CANCELLED', 'EXPIRED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
+    CREATE TYPE payment_status AS ENUM ('PENDING', 'CONFIRMED', 'RECEIVED', 'OVERDUE', 'REFUNDED', 'FAILED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_method') THEN
+    CREATE TYPE payment_method AS ENUM ('PIX', 'CREDIT_CARD', 'BOLETO');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'anamnesis_status') THEN
+    CREATE TYPE anamnesis_status AS ENUM ('DRAFT', 'SUBMITTED', 'REVIEWED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'evaluation_request_status') THEN
+    CREATE TYPE evaluation_request_status AS ENUM ('PENDING', 'APPROVED', 'COMPLETED', 'CANCELLED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'photo_type') THEN
+    CREATE TYPE photo_type AS ENUM ('FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT', 'EXTRA');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'protocol_status') THEN
+    CREATE TYPE protocol_status AS ENUM ('DRAFT', 'ACTIVE', 'ARCHIVED');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'notification_type') THEN
+    CREATE TYPE notification_type AS ENUM ('SYSTEM', 'PAYMENT', 'PROTOCOL', 'EVALUATION', 'MESSAGE');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'appointment_status') THEN
+    CREATE TYPE appointment_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED', 'RESCHEDULED');
+  END IF;
+END $$;
 
 -- Trigger Function for Updated At
 CREATE OR REPLACE FUNCTION set_updated_at()
@@ -32,7 +57,7 @@ $$ LANGUAGE plpgsql;
 -- ==========================================================
 -- 1. PROFILES (Extends auth.users)
 -- ==========================================================
-CREATE TABLE public.profiles (
+CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
@@ -43,9 +68,10 @@ CREATE TABLE public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_profiles_role ON public.profiles(role);
-CREATE INDEX idx_profiles_email ON public.profiles(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 
+DROP TRIGGER IF EXISTS tr_profiles_updated_at ON public.profiles;
 CREATE TRIGGER tr_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -53,7 +79,7 @@ CREATE TRIGGER tr_profiles_updated_at
 -- ==========================================================
 -- 2. PERSONAL TRAINERS
 -- ==========================================================
-CREATE TABLE public.personal_trainers (
+CREATE TABLE IF NOT EXISTS public.personal_trainers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id UUID NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
   cref TEXT,
@@ -64,6 +90,7 @@ CREATE TABLE public.personal_trainers (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+DROP TRIGGER IF EXISTS tr_personal_trainers_updated_at ON public.personal_trainers;
 CREATE TRIGGER tr_personal_trainers_updated_at
   BEFORE UPDATE ON public.personal_trainers
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -71,7 +98,7 @@ CREATE TRIGGER tr_personal_trainers_updated_at
 -- ==========================================================
 -- 3. STUDENTS
 -- ==========================================================
-CREATE TABLE public.students (
+CREATE TABLE IF NOT EXISTS public.students (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id UUID NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
   personal_trainer_id UUID REFERENCES public.personal_trainers(id) ON DELETE SET NULL,
@@ -84,9 +111,10 @@ CREATE TABLE public.students (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_students_trainer ON public.students(personal_trainer_id);
-CREATE INDEX idx_students_asaas_customer ON public.students(asaas_customer_id);
+CREATE INDEX IF NOT EXISTS idx_students_trainer ON public.students(personal_trainer_id);
+CREATE INDEX IF NOT EXISTS idx_students_asaas_customer ON public.students(asaas_customer_id);
 
+DROP TRIGGER IF EXISTS tr_students_updated_at ON public.students;
 CREATE TRIGGER tr_students_updated_at
   BEFORE UPDATE ON public.students
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -94,7 +122,7 @@ CREATE TRIGGER tr_students_updated_at
 -- ==========================================================
 -- 4. PLANS
 -- ==========================================================
-CREATE TABLE public.plans (
+CREATE TABLE IF NOT EXISTS public.plans (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -110,7 +138,7 @@ CREATE TABLE public.plans (
 -- ==========================================================
 -- 5. CONSULTANCIES
 -- ==========================================================
-CREATE TABLE public.consultancies (
+CREATE TABLE IF NOT EXISTS public.consultancies (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   personal_trainer_id UUID REFERENCES public.personal_trainers(id) ON DELETE SET NULL,
@@ -122,12 +150,12 @@ CREATE TABLE public.consultancies (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_consultancies_student ON public.consultancies(student_id);
+CREATE INDEX IF NOT EXISTS idx_consultancies_student ON public.consultancies(student_id);
 
 -- ==========================================================
 -- 6. SUBSCRIPTIONS (ASAAS API)
 -- ==========================================================
-CREATE TABLE public.subscriptions (
+CREATE TABLE IF NOT EXISTS public.subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   plan_id UUID NOT NULL REFERENCES public.plans(id),
@@ -141,13 +169,13 @@ CREATE TABLE public.subscriptions (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_subscriptions_student ON public.subscriptions(student_id);
-CREATE INDEX idx_subscriptions_asaas ON public.subscriptions(asaas_subscription_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_student ON public.subscriptions(student_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_asaas ON public.subscriptions(asaas_subscription_id);
 
 -- ==========================================================
 -- 7. PAYMENTS (ASAAS Transactions)
 -- ==========================================================
-CREATE TABLE public.payments (
+CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   subscription_id UUID REFERENCES public.subscriptions(id) ON DELETE SET NULL,
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
@@ -161,13 +189,13 @@ CREATE TABLE public.payments (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_payments_student ON public.payments(student_id);
-CREATE INDEX idx_payments_asaas ON public.payments(asaas_payment_id);
+CREATE INDEX IF NOT EXISTS idx_payments_student ON public.payments(student_id);
+CREATE INDEX IF NOT EXISTS idx_payments_asaas ON public.payments(asaas_payment_id);
 
 -- ==========================================================
 -- 8. ANAMNESES
 -- ==========================================================
-CREATE TABLE public.anamneses (
+CREATE TABLE IF NOT EXISTS public.anamneses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   title TEXT NOT NULL DEFAULT 'Anamnese de Início',
@@ -178,12 +206,12 @@ CREATE TABLE public.anamneses (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_anamneses_student ON public.anamneses(student_id);
+CREATE INDEX IF NOT EXISTS idx_anamneses_student ON public.anamneses(student_id);
 
 -- ==========================================================
 -- 9. ANAMNESIS ANSWERS
 -- ==========================================================
-CREATE TABLE public.anamnesis_answers (
+CREATE TABLE IF NOT EXISTS public.anamnesis_answers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   anamnesis_id UUID NOT NULL REFERENCES public.anamneses(id) ON DELETE CASCADE,
   question_key TEXT NOT NULL,
@@ -191,12 +219,12 @@ CREATE TABLE public.anamnesis_answers (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_anamnesis_answers_anamnesis ON public.anamnesis_answers(anamnesis_id);
+CREATE INDEX IF NOT EXISTS idx_anamnesis_answers_anamnesis ON public.anamnesis_answers(anamnesis_id);
 
 -- ==========================================================
 -- 10. EVALUATION REQUESTS
 -- ==========================================================
-CREATE TABLE public.evaluation_requests (
+CREATE TABLE IF NOT EXISTS public.evaluation_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   status evaluation_request_status DEFAULT 'PENDING' NOT NULL,
@@ -205,12 +233,12 @@ CREATE TABLE public.evaluation_requests (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_evaluation_requests_student ON public.evaluation_requests(student_id);
+CREATE INDEX IF NOT EXISTS idx_evaluation_requests_student ON public.evaluation_requests(student_id);
 
 -- ==========================================================
 -- 11. EVALUATIONS
 -- ==========================================================
-CREATE TABLE public.evaluations (
+CREATE TABLE IF NOT EXISTS public.evaluations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   personal_trainer_id UUID REFERENCES public.personal_trainers(id) ON DELETE SET NULL,
@@ -222,12 +250,12 @@ CREATE TABLE public.evaluations (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_evaluations_student ON public.evaluations(student_id);
+CREATE INDEX IF NOT EXISTS idx_evaluations_student ON public.evaluations(student_id);
 
 -- ==========================================================
 -- 12. EVALUATION PHOTOS (Cloudinary Managed)
 -- ==========================================================
-CREATE TABLE public.evaluation_photos (
+CREATE TABLE IF NOT EXISTS public.evaluation_photos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   evaluation_id UUID NOT NULL REFERENCES public.evaluations(id) ON DELETE CASCADE,
   cloudinary_public_id TEXT NOT NULL,
@@ -237,12 +265,12 @@ CREATE TABLE public.evaluation_photos (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_evaluation_photos_eval ON public.evaluation_photos(evaluation_id);
+CREATE INDEX IF NOT EXISTS idx_evaluation_photos_eval ON public.evaluation_photos(evaluation_id);
 
 -- ==========================================================
 -- 13. BODY MEASUREMENTS
 -- ==========================================================
-CREATE TABLE public.body_measurements (
+CREATE TABLE IF NOT EXISTS public.body_measurements (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   evaluation_id UUID REFERENCES public.evaluations(id) ON DELETE CASCADE,
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
@@ -255,12 +283,12 @@ CREATE TABLE public.body_measurements (
   recorded_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_body_measurements_student ON public.body_measurements(student_id);
+CREATE INDEX IF NOT EXISTS idx_body_measurements_student ON public.body_measurements(student_id);
 
 -- ==========================================================
 -- 14. WEIGHT HISTORY
 -- ==========================================================
-CREATE TABLE public.weight_history (
+CREATE TABLE IF NOT EXISTS public.weight_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   weight_kg NUMERIC(5,2) NOT NULL,
@@ -269,12 +297,12 @@ CREATE TABLE public.weight_history (
   recorded_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_weight_history_student ON public.weight_history(student_id);
+CREATE INDEX IF NOT EXISTS idx_weight_history_student ON public.weight_history(student_id);
 
 -- ==========================================================
 -- 15. STUDENT PROGRESS
 -- ==========================================================
-CREATE TABLE public.student_progress (
+CREATE TABLE IF NOT EXISTS public.student_progress (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   period_start DATE NOT NULL,
@@ -283,12 +311,12 @@ CREATE TABLE public.student_progress (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_student_progress_student ON public.student_progress(student_id);
+CREATE INDEX IF NOT EXISTS idx_student_progress_student ON public.student_progress(student_id);
 
 -- ==========================================================
 -- 16. GOALS
 -- ==========================================================
-CREATE TABLE public.goals (
+CREATE TABLE IF NOT EXISTS public.goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -301,12 +329,12 @@ CREATE TABLE public.goals (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_goals_student ON public.goals(student_id);
+CREATE INDEX IF NOT EXISTS idx_goals_student ON public.goals(student_id);
 
 -- ==========================================================
 -- 17. PROTOCOLS
 -- ==========================================================
-CREATE TABLE public.protocols (
+CREATE TABLE IF NOT EXISTS public.protocols (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   personal_trainer_id UUID REFERENCES public.personal_trainers(id) ON DELETE SET NULL,
@@ -317,12 +345,12 @@ CREATE TABLE public.protocols (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_protocols_student ON public.protocols(student_id);
+CREATE INDEX IF NOT EXISTS idx_protocols_student ON public.protocols(student_id);
 
 -- ==========================================================
 -- 18. PROTOCOL VERSIONS
 -- ==========================================================
-CREATE TABLE public.protocol_versions (
+CREATE TABLE IF NOT EXISTS public.protocol_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   protocol_id UUID NOT NULL REFERENCES public.protocols(id) ON DELETE CASCADE,
   version_number INT NOT NULL,
@@ -330,12 +358,12 @@ CREATE TABLE public.protocol_versions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_protocol_versions_protocol ON public.protocol_versions(protocol_id);
+CREATE INDEX IF NOT EXISTS idx_protocol_versions_protocol ON public.protocol_versions(protocol_id);
 
 -- ==========================================================
 -- 19. TRAINING LINKS (Exercises)
 -- ==========================================================
-CREATE TABLE public.training_links (
+CREATE TABLE IF NOT EXISTS public.training_links (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   protocol_version_id UUID NOT NULL REFERENCES public.protocol_versions(id) ON DELETE CASCADE,
   exercise_name TEXT NOT NULL,
@@ -348,12 +376,12 @@ CREATE TABLE public.training_links (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_training_links_version ON public.training_links(protocol_version_id);
+CREATE INDEX IF NOT EXISTS idx_training_links_version ON public.training_links(protocol_version_id);
 
 -- ==========================================================
 -- 20. NUTRITION LINKS (Complementary Guidelines)
 -- ==========================================================
-CREATE TABLE public.nutrition_links (
+CREATE TABLE IF NOT EXISTS public.nutrition_links (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   protocol_version_id UUID NOT NULL REFERENCES public.protocol_versions(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -365,7 +393,7 @@ CREATE TABLE public.nutrition_links (
 -- ==========================================================
 -- 21. MESSAGES (Internal Chat)
 -- ==========================================================
-CREATE TABLE public.messages (
+CREATE TABLE IF NOT EXISTS public.messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   sender_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   receiver_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -374,12 +402,12 @@ CREATE TABLE public.messages (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_messages_conversation ON public.messages(sender_id, receiver_id);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(sender_id, receiver_id);
 
 -- ==========================================================
 -- 22. NOTIFICATIONS
 -- ==========================================================
-CREATE TABLE public.notifications (
+CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -390,12 +418,12 @@ CREATE TABLE public.notifications (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_notifications_profile ON public.notifications(profile_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_profile ON public.notifications(profile_id);
 
 -- ==========================================================
 -- 23. APPOINTMENTS
 -- ==========================================================
-CREATE TABLE public.appointments (
+CREATE TABLE IF NOT EXISTS public.appointments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
   personal_trainer_id UUID REFERENCES public.personal_trainers(id) ON DELETE SET NULL,
@@ -407,12 +435,12 @@ CREATE TABLE public.appointments (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_appointments_student ON public.appointments(student_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_student ON public.appointments(student_id);
 
 -- ==========================================================
 -- 24. FILES
 -- ==========================================================
-CREATE TABLE public.files (
+CREATE TABLE IF NOT EXISTS public.files (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   uploaded_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   file_name TEXT NOT NULL,
@@ -426,7 +454,7 @@ CREATE TABLE public.files (
 -- ==========================================================
 -- 25. ACTIVITY LOGS (Security & Audit)
 -- ==========================================================
-CREATE TABLE public.activity_logs (
+CREATE TABLE IF NOT EXISTS public.activity_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   action TEXT NOT NULL,
@@ -436,8 +464,26 @@ CREATE TABLE public.activity_logs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
-CREATE INDEX idx_activity_logs_user ON public.activity_logs(user_id);
-CREATE INDEX idx_activity_logs_action ON public.activity_logs(action);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_user ON public.activity_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_action ON public.activity_logs(action);
+
+-- ==========================================================
+-- 26. ONBOARDING DRAFTS (Draft saves for onboarding form)
+-- ==========================================================
+CREATE TABLE IF NOT EXISTS public.onboarding_drafts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL UNIQUE REFERENCES public.profiles(id) ON DELETE CASCADE,
+  current_step INT NOT NULL DEFAULT 1,
+  step_data JSONB DEFAULT '{}'::jsonb NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_onboarding_drafts_user ON public.onboarding_drafts(user_id);
+
+DROP TRIGGER IF EXISTS tr_onboarding_drafts_updated_at ON public.onboarding_drafts;
+CREATE TRIGGER tr_onboarding_drafts_updated_at
+  BEFORE UPDATE ON public.onboarding_drafts
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ==========================================================
 -- AUTOMATIC AUTH SYNC TRIGGER
@@ -471,6 +517,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger firing on new user signup
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();

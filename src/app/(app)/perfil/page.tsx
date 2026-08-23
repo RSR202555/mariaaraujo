@@ -1,20 +1,18 @@
+"use client";
+
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { User } from "lucide-react";
+import { PerfilFeature } from "@/features/student/PerfilFeature";
 
 export default function PerfilPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Conta"
+        badge="Conta Aluno VIP"
         title="Meu Perfil"
-        description="Gerenciamento de dados pessoais, foto de avatar e informações da assinatura."
+        description="Gerenciamento dos seus dados pessoais, telefone de contato e status da sua assinatura na consultoria."
       />
-      <EmptyState
-        icon={User}
-        title="Perfil do Usuário"
-        description="Esta rota do App Shell receberá o formulário de edição de dados pessoais no próximo módulo."
-      />
+
+      <PerfilFeature />
     </div>
   );
 }

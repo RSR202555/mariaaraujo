@@ -3,6 +3,7 @@ import { PaymentRepository } from '@/repositories/payment.repository';
 import { StudentRepository } from '@/repositories/student.repository';
 import { EmailService } from '@/services/email.service';
 import { NotificationRepository } from '@/repositories/notification.repository';
+import { PaymentStatus, PaymentMethod } from '@/types/database.types';
 
 export class PaymentService {
   /**
@@ -15,8 +16,8 @@ export class PaymentService {
     const asaasCustomerId = paymentData.customer;
     const asaasSubscriptionId = paymentData.subscription;
     const value = paymentData.value;
-    const billingType = paymentData.billingType;
-    const status = paymentData.status;
+    const billingType: PaymentMethod = paymentData.billingType || 'PIX';
+    const status: PaymentStatus = paymentData.status || 'PENDING';
 
     // Buscar aluno pelo Asaas Customer ID
     const student = await StudentRepository.findByAsaasCustomerId(asaasCustomerId);
@@ -36,6 +37,8 @@ export class PaymentService {
       paid_at: paymentData.paymentDate ? new Date(paymentData.paymentDate).toISOString() : undefined,
     });
 
+    const studentProfile = (student as any).profiles;
+
     // Eventos de Pagamento Confirmado / Recebido
     if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
       // 1. Ativar conta do aluno
@@ -47,10 +50,10 @@ export class PaymentService {
       }
 
       // 3. Enviar e-mail de confirmação de pagamento via Resend
-      if (student.profiles?.email) {
+      if (studentProfile?.email) {
         await EmailService.sendPaymentConfirmedEmail(
-          student.profiles.email,
-          student.profiles.full_name,
+          studentProfile.email,
+          studentProfile.full_name,
           value,
           billingType
         );

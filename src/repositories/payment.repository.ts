@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/database/server';
 import { createAdminClient } from '@/database/service-role';
+import { SubscriptionStatus, PaymentStatus, PaymentMethod } from '@/types/database.types';
 
 export class PaymentRepository {
   static async createSubscription(subscriptionData: {
@@ -7,8 +8,8 @@ export class PaymentRepository {
     plan_id: string;
     asaas_subscription_id: string;
     asaas_customer_id: string;
-    status: string;
-    billing_type: string;
+    status: SubscriptionStatus;
+    billing_type: PaymentMethod;
     current_period_start: string;
     current_period_end: string;
   }) {
@@ -37,7 +38,7 @@ export class PaymentRepository {
     return data;
   }
 
-  static async updateSubscriptionStatus(asaasSubscriptionId: string, status: string) {
+  static async updateSubscriptionStatus(asaasSubscriptionId: string, status: SubscriptionStatus) {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from('subscriptions')
@@ -55,8 +56,8 @@ export class PaymentRepository {
     student_id: string;
     asaas_payment_id: string;
     amount: number;
-    status: string;
-    billing_type: string;
+    status: PaymentStatus;
+    billing_type: PaymentMethod;
     invoice_url?: string;
     paid_at?: string;
   }) {

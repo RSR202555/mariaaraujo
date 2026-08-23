@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle2, RefreshCw, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function ConfirmarEmailPage() {
+function ConfirmarEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get("email") || "seu-email@exemplo.com";
@@ -77,5 +77,13 @@ export default function ConfirmarEmailPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function ConfirmarEmailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#090909] flex items-center justify-center text-white">Carregando...</div>}>
+      <ConfirmarEmailContent />
+    </Suspense>
   );
 }

@@ -36,7 +36,7 @@ const defaultMessages: AdminMessageSummary[] = [
   },
 ];
 
-export function MessagePanel({ messages = defaultMessages }: MessagePanelProps) {
+export function MessagePanel({ messages = [] }: MessagePanelProps) {
   return (
     <div className="bg-[#141414] border border-[#262626] rounded-3xl p-6 sm:p-7 text-left space-y-5 shadow-2xl group hover:border-primary/40 transition-colors">
       <div className="flex items-center justify-between">
@@ -51,27 +51,34 @@ export function MessagePanel({ messages = defaultMessages }: MessagePanelProps) 
         </span>
       </div>
 
-      <div className="space-y-2.5">
-        {messages.map((item) => (
-          <div
-            key={item.id}
-            className="bg-[#090909] border border-[#262626] rounded-2xl p-3 flex items-start space-x-3 hover:border-white/20 transition-all"
-          >
-            <Avatar className="h-9 w-9 border border-white/10 shrink-0 mt-0.5">
-              <AvatarImage src={item.studentAvatar} alt={item.studentName} />
-              <AvatarFallback>AL</AvatarFallback>
-            </Avatar>
+      {messages.length === 0 ? (
+        <div className="p-5 text-center space-y-1 bg-[#090909] border border-[#262626] rounded-2xl">
+          <p className="text-xs font-semibold text-gray-300">Nenhuma conversa pendente</p>
+          <p className="text-[0.68rem] text-muted-foreground">Mensagens diretas enviadas por alunas aparecerão aqui.</p>
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {messages.map((item) => (
+            <div
+              key={item.id}
+              className="bg-[#090909] border border-[#262626] rounded-2xl p-3 flex items-start space-x-3 hover:border-white/20 transition-all"
+            >
+              <Avatar className="h-9 w-9 border border-white/10 shrink-0 mt-0.5">
+                <AvatarImage src={item.studentAvatar} alt={item.studentName} />
+                <AvatarFallback>AL</AvatarFallback>
+              </Avatar>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white truncate">{item.studentName}</span>
-                <span className="text-[0.62rem] text-muted-foreground">{item.timeAgo}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white truncate">{item.studentName}</span>
+                  <span className="text-[0.62rem] text-muted-foreground">{item.timeAgo}</span>
+                </div>
+                <p className="text-[0.7rem] text-gray-300 truncate mt-0.5 leading-tight">{item.lastMessage}</p>
               </div>
-              <p className="text-[0.7rem] text-gray-300 truncate mt-0.5 leading-tight">{item.lastMessage}</p>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <Button
         onClick={() => (window.location.href = "/mensagens")}

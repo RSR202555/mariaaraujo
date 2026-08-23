@@ -5,7 +5,7 @@ export interface AuthUser {
   email: string;
   fullName?: string;
   avatarUrl?: string;
-  role?: "aluna" | "admin";
+  role?: "aluna" | "admin" | "aluno" | "ADMIN" | "PERSONAL";
 }
 
 export interface AuthState {

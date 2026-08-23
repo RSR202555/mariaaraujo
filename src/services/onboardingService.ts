@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { OnboardingFullData } from "@/types/onboarding";
+import { Json } from "@/types/database.types";
 
 const LOCAL_STORAGE_KEY = "maria_onboarding_vip_draft";
 
@@ -30,7 +31,7 @@ export class OnboardingService {
           {
             user_id: user.id,
             current_step: currentStep,
-            step_data: data,
+            step_data: data as unknown as Json,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id" }
@@ -61,7 +62,10 @@ export class OnboardingService {
           .single();
 
         if (data) {
-          return { currentStep: data.current_step, data: data.step_data };
+          return {
+            currentStep: data.current_step,
+            data: (data.step_data as unknown as Partial<OnboardingFullData>) || {},
+          };
         }
       }
 

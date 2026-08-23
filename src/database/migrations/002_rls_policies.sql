@@ -1,6 +1,7 @@
 -- ==========================================================
 -- MARIA ARAÚJO PERSONAL - RLS SECURITY MIGRATION (002)
--- Row Level Security (RLS) Helper Functions & Policies (25 Tables)
+-- Row Level Security (RLS) Helper Functions & Policies (26 Tables)
+-- Idempotent Migration Script
 -- ==========================================================
 
 -- Helper SQL Functions (SECURITY DEFINER for fast, cached execution)
@@ -38,7 +39,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ==========================================================
--- ENABLE RLS ON ALL 25 TABLES
+-- ENABLE RLS ON ALL 26 TABLES
 -- ==========================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.personal_trainers ENABLE ROW LEVEL SECURITY;
@@ -65,84 +66,103 @@ ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.onboarding_drafts ENABLE ROW LEVEL SECURITY;
 
 -- ==========================================================
 -- 1. PROFILES POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Users can read own profile or admin/personal read all" ON public.profiles;
 CREATE POLICY "Users can read own profile or admin/personal read all" ON public.profiles
   FOR SELECT USING (id = auth.uid() OR public.is_personal());
 
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (id = auth.uid());
 
+DROP POLICY IF EXISTS "Admin can delete profiles" ON public.profiles;
 CREATE POLICY "Admin can delete profiles" ON public.profiles
   FOR DELETE USING (public.is_admin());
 
 -- ==========================================================
 -- 2. PERSONAL TRAINERS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Public read personal trainers" ON public.personal_trainers;
 CREATE POLICY "Public read personal trainers" ON public.personal_trainers
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Admin manage personal trainers" ON public.personal_trainers;
 CREATE POLICY "Admin manage personal trainers" ON public.personal_trainers
   FOR ALL USING (public.is_admin());
 
 -- ==========================================================
 -- 3. STUDENTS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read own record or personal/admin read assigned" ON public.students;
 CREATE POLICY "Students read own record or personal/admin read assigned" ON public.students
   FOR SELECT USING (
     profile_id = auth.uid() OR public.is_personal()
   );
 
+DROP POLICY IF EXISTS "Students update own height/birth_date" ON public.students;
 CREATE POLICY "Students update own height/birth_date" ON public.students
   FOR UPDATE USING (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "Admin/Personal insert/manage students" ON public.students;
 CREATE POLICY "Admin/Personal insert/manage students" ON public.students
   FOR ALL USING (public.is_personal());
 
 -- ==========================================================
 -- 4. PLANS POLICIES (Public read active plans)
 -- ==========================================================
+DROP POLICY IF EXISTS "Public read active plans" ON public.plans;
 CREATE POLICY "Public read active plans" ON public.plans
   FOR SELECT USING (is_active = true OR public.is_admin());
 
+DROP POLICY IF EXISTS "Admin manage plans" ON public.plans;
 CREATE POLICY "Admin manage plans" ON public.plans
   FOR ALL USING (public.is_admin());
 
 -- ==========================================================
 -- 5. CONSULTANCIES POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read own consultancies" ON public.consultancies;
 CREATE POLICY "Students read own consultancies" ON public.consultancies
   FOR SELECT USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Admin/Personal manage consultancies" ON public.consultancies;
 CREATE POLICY "Admin/Personal manage consultancies" ON public.consultancies
   FOR ALL USING (public.is_personal());
 
 -- ==========================================================
 -- 6. SUBSCRIPTIONS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read own subscriptions" ON public.subscriptions;
 CREATE POLICY "Students read own subscriptions" ON public.subscriptions
   FOR SELECT USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Admin/Service role manage subscriptions" ON public.subscriptions;
 CREATE POLICY "Admin/Service role manage subscriptions" ON public.subscriptions
   FOR ALL USING (public.is_admin());
 
 -- ==========================================================
 -- 7. PAYMENTS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read own payments" ON public.payments;
 CREATE POLICY "Students read own payments" ON public.payments
   FOR SELECT USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Admin/Service role manage payments" ON public.payments;
 CREATE POLICY "Admin/Service role manage payments" ON public.payments
   FOR ALL USING (public.is_admin());
 
 -- ==========================================================
 -- 8 & 9. ANAMNESES & ANSWERS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/write own anamneses" ON public.anamneses;
 CREATE POLICY "Students read/write own anamneses" ON public.anamneses
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Students read/write own anamnesis answers" ON public.anamnesis_answers;
 CREATE POLICY "Students read/write own anamnesis answers" ON public.anamnesis_answers
   FOR ALL USING (
     anamnesis_id IN (SELECT id FROM public.anamneses WHERE student_id = public.get_student_id(auth.uid()))
@@ -152,18 +172,22 @@ CREATE POLICY "Students read/write own anamnesis answers" ON public.anamnesis_an
 -- ==========================================================
 -- 10 & 11. EVALUATION REQUESTS & EVALUATIONS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/write own evaluation requests" ON public.evaluation_requests;
 CREATE POLICY "Students read/write own evaluation requests" ON public.evaluation_requests
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Students read own evaluations" ON public.evaluations;
 CREATE POLICY "Students read own evaluations" ON public.evaluations
   FOR SELECT USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Personal manage evaluations" ON public.evaluations;
 CREATE POLICY "Personal manage evaluations" ON public.evaluations
   FOR ALL USING (public.is_personal());
 
 -- ==========================================================
 -- 12. EVALUATION PHOTOS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/insert own evaluation photos" ON public.evaluation_photos;
 CREATE POLICY "Students read/insert own evaluation photos" ON public.evaluation_photos
   FOR ALL USING (
     evaluation_id IN (SELECT id FROM public.evaluations WHERE student_id = public.get_student_id(auth.uid()))
@@ -173,92 +197,121 @@ CREATE POLICY "Students read/insert own evaluation photos" ON public.evaluation_
 -- ==========================================================
 -- 13 & 14. BODY MEASUREMENTS & WEIGHT HISTORY POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/insert own measurements" ON public.body_measurements;
 CREATE POLICY "Students read/insert own measurements" ON public.body_measurements
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Students read/insert own weight history" ON public.weight_history;
 CREATE POLICY "Students read/insert own weight history" ON public.weight_history
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
 -- ==========================================================
 -- 15 & 16. STUDENT PROGRESS & GOALS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/write own progress" ON public.student_progress;
 CREATE POLICY "Students read/write own progress" ON public.student_progress
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Students read/write own goals" ON public.goals;
 CREATE POLICY "Students read/write own goals" ON public.goals
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
 -- ==========================================================
 -- 17, 18, 19, 20. PROTOCOLS, VERSIONS & LINKS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read own protocols" ON public.protocols;
 CREATE POLICY "Students read own protocols" ON public.protocols
   FOR SELECT USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
+DROP POLICY IF EXISTS "Personal manage protocols" ON public.protocols;
 CREATE POLICY "Personal manage protocols" ON public.protocols
   FOR ALL USING (public.is_personal());
 
+DROP POLICY IF EXISTS "Students read own protocol versions" ON public.protocol_versions;
 CREATE POLICY "Students read own protocol versions" ON public.protocol_versions
   FOR SELECT USING (
     protocol_id IN (SELECT id FROM public.protocols WHERE student_id = public.get_student_id(auth.uid()))
     OR public.is_personal()
   );
 
+DROP POLICY IF EXISTS "Personal manage protocol versions" ON public.protocol_versions;
 CREATE POLICY "Personal manage protocol versions" ON public.protocol_versions
   FOR ALL USING (public.is_personal());
 
+DROP POLICY IF EXISTS "Students read training links" ON public.training_links;
 CREATE POLICY "Students read training links" ON public.training_links
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Personal manage training links" ON public.training_links;
 CREATE POLICY "Personal manage training links" ON public.training_links
   FOR ALL USING (public.is_personal());
 
+DROP POLICY IF EXISTS "Students read nutrition links" ON public.nutrition_links;
 CREATE POLICY "Students read nutrition links" ON public.nutrition_links
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Personal manage nutrition links" ON public.nutrition_links;
 CREATE POLICY "Personal manage nutrition links" ON public.nutrition_links
   FOR ALL USING (public.is_personal());
 
 -- ==========================================================
 -- 21. MESSAGES POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Users read own conversation messages" ON public.messages;
 CREATE POLICY "Users read own conversation messages" ON public.messages
   FOR SELECT USING (sender_id = auth.uid() OR receiver_id = auth.uid() OR public.is_admin());
 
+DROP POLICY IF EXISTS "Users insert own sent messages" ON public.messages;
 CREATE POLICY "Users insert own sent messages" ON public.messages
   FOR INSERT WITH CHECK (sender_id = auth.uid());
 
+DROP POLICY IF EXISTS "Receiver mark as read" ON public.messages;
 CREATE POLICY "Receiver mark as read" ON public.messages
   FOR UPDATE USING (receiver_id = auth.uid());
 
 -- ==========================================================
 -- 22. NOTIFICATIONS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Users read own notifications" ON public.notifications;
 CREATE POLICY "Users read own notifications" ON public.notifications
   FOR SELECT USING (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users update own notification read status" ON public.notifications;
 CREATE POLICY "Users update own notification read status" ON public.notifications
   FOR UPDATE USING (profile_id = auth.uid());
 
 -- ==========================================================
 -- 23. APPOINTMENTS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Students read/manage own appointments" ON public.appointments;
 CREATE POLICY "Students read/manage own appointments" ON public.appointments
   FOR ALL USING (student_id = public.get_student_id(auth.uid()) OR public.is_personal());
 
 -- ==========================================================
 -- 24. FILES POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Users read own uploaded files or public files" ON public.files;
 CREATE POLICY "Users read own uploaded files or public files" ON public.files
   FOR SELECT USING (uploaded_by = auth.uid() OR public.is_personal());
 
+DROP POLICY IF EXISTS "Users upload files" ON public.files;
 CREATE POLICY "Users upload files" ON public.files
   FOR INSERT WITH CHECK (uploaded_by = auth.uid());
 
 -- ==========================================================
 -- 25. ACTIVITY LOGS POLICIES
 -- ==========================================================
+DROP POLICY IF EXISTS "Admin read all activity logs" ON public.activity_logs;
 CREATE POLICY "Admin read all activity logs" ON public.activity_logs
   FOR SELECT USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Users insert activity logs" ON public.activity_logs;
 CREATE POLICY "Users insert activity logs" ON public.activity_logs
   FOR INSERT WITH CHECK (user_id = auth.uid());
+
+-- ==========================================================
+-- 26. ONBOARDING DRAFTS POLICIES
+-- ==========================================================
+DROP POLICY IF EXISTS "Users read/write own onboarding draft" ON public.onboarding_drafts;
+CREATE POLICY "Users read/write own onboarding draft" ON public.onboarding_drafts
+  FOR ALL USING (user_id = auth.uid());

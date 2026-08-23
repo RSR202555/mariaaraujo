@@ -3,20 +3,24 @@
 import { PageHeader } from "@/components/shell/PageHeader";
 import { DashboardGrid } from "@/features/dashboard/DashboardGrid";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Dumbbell } from "lucide-react";
+import { MessageSquare, Dumbbell, ExternalLink } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function StudentDashboardPage() {
+  const { user } = useAuth();
+  const firstName = user?.fullName ? user.fullName.split(" ")[0] : "Aluna";
+
   return (
     <div className="space-y-8">
       {/* Header Personalizado da Área do Aluno */}
       <PageHeader
         badge="Área do Aluno VIP"
-        title="Olá, João 👋"
-        description="Continue sua evolução. Cada treino e refeição contam para atingir seu objetivo de alta performance."
+        title={`Olá, ${firstName} 👋`}
+        description="Continue sua evolução. Seus treinos e dieta estão integrados para alta performance."
         actions={
           <div className="flex items-center space-x-3">
             <a
-              href="https://wa.me/5500000000000?text=Ol%C3%A1%20Maria!%20D%C3%BAvida%20sobre%20meu%20treino."
+              href="https://wa.me/5511999999999?text=Ol%C3%A1%20Maria!%20D%C3%BAvida%20sobre%20minha%20consultoria."
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -25,15 +29,21 @@ export default function StudentDashboardPage() {
                 Falar com a Maria
               </Button>
             </a>
-            <Button
-              onClick={() => (window.location.href = "/meu-treino")}
-              variant="glow"
-              size="sm"
-              className="rounded-full text-xs font-black uppercase tracking-wider"
+            <a
+              href="https://app.mfitpersonal.com.br/login"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Dumbbell className="mr-1.5 h-3.5 w-3.5" />
-              Treino de Hoje
-            </Button>
+              <Button
+                variant="glow"
+                size="sm"
+                className="rounded-full text-xs font-black uppercase tracking-wider"
+              >
+                <Dumbbell className="mr-1.5 h-3.5 w-3.5" />
+                Acessar MFIT
+                <ExternalLink className="ml-1.5 h-3 w-3" />
+              </Button>
+            </a>
           </div>
         }
       />

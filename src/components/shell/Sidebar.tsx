@@ -25,31 +25,43 @@ import { SidebarGroup } from "./SidebarGroup";
 import { SidebarItem } from "./SidebarItem";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+
+const AUTHORIZED_ADMIN_EMAIL = "mariiaraujoo32@gmail.com";
 
 export function Sidebar() {
   const { isCollapsed, toggleCollapse, isMobileOpen, setIsMobileOpen } = useAppShell();
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const isAdmin = pathname.startsWith("/admin");
+  const isMariaAdmin = user?.email?.trim().toLowerCase() === AUTHORIZED_ADMIN_EMAIL.toLowerCase();
+
+  interface NavItem {
+    href: string;
+    icon: any;
+    label: string;
+    badge?: string;
+  }
 
   // Menu de Navegação da Área do Aluno VIP
-  const studentNavItems = [
+  const studentNavItems: NavItem[] = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/meu-treino", icon: Dumbbell, label: "Meu Treino", badge: "Ativo" },
     { href: "/plano-alimentar", icon: Utensils, label: "Plano Alimentar" },
     { href: "/minha-evolucao", icon: TrendingUp, label: "Minha Evolução" },
     { href: "/fotos", icon: Camera, label: "Fotos" },
     { href: "/avaliacoes", icon: ClipboardList, label: "Avaliações" },
-    { href: "/mensagens", icon: MessageSquare, label: "Mensagens", badge: 2 },
+    { href: "/mensagens", icon: MessageSquare, label: "Mensagens" },
   ];
 
   // Menu de Navegação da Área Administrativa da Maria Personal
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
     { href: "/admin", icon: LayoutDashboard, label: "Painel Geral" },
     { href: "/admin/alunas", icon: Users, label: "Gestão de Alunas" },
-    { href: "/admin/protocolos", icon: FileText, label: "Protocolos & Treinos", badge: 7 },
+    { href: "/admin/protocolos", icon: FileText, label: "Protocolos & Treinos" },
     { href: "/admin/financeiro", icon: DollarSign, label: "Financeiro Asaas" },
-    { href: "/mensagens", icon: MessageSquare, label: "Mensagens", badge: 2 },
+    { href: "/mensagens", icon: MessageSquare, label: "Mensagens" },
   ];
 
   const mainNavItems = isAdmin ? adminNavItems : studentNavItems;
@@ -118,28 +130,34 @@ export function Sidebar() {
             ))}
           </SidebarGroup>
 
-          {/* Botão de Alternância entre Admin e Aluno */}
-          <div className="pt-2">
-            <Link
-              href={isAdmin ? "/dashboard" : "/admin"}
-              onClick={isMobile ? () => setIsMobileOpen(false) : undefined}
-              className={cn(
-                "flex items-center rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-white hover:bg-white/5 border border-white/5 transition-colors",
-                isCollapsed && !isMobile ? "justify-center" : "space-x-2.5"
-              )}
-            >
-              <ArrowLeftRight className="h-3.5 w-3.5 text-primary shrink-0" />
-              {(!isCollapsed || isMobile) && (
-                <span>{isAdmin ? "Ver como Aluno" : "Ir para Admin"}</span>
-              )}
-            </Link>
-          </div>
+          {/* Botão de Alternância visível apenas para a Personal Maria Araújo */}
+          {isMariaAdmin && (
+            <div className="pt-2">
+              <Link
+                href={isAdmin ? "/dashboard" : "/admin"}
+                onClick={isMobile ? () => setIsMobileOpen(false) : undefined}
+                className={cn(
+                  "flex items-center rounded-xl px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-white hover:bg-white/5 border border-white/5 transition-colors",
+                  isCollapsed && !isMobile ? "justify-center" : "space-x-2.5"
+                )}
+              >
+                <ArrowLeftRight className="h-3.5 w-3.5 text-primary shrink-0" />
+                {(!isCollapsed || isMobile) && (
+                  <span>{isAdmin ? "Ver como Aluno" : "Ir para Admin"}</span>
+                )}
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
 
       {/* Logout Item at Bottom */}
       <div className="pt-4 border-t border-[#262626]">
         <button
+          onClick={() => {
+            logout();
+            window.location.href = "/login";
+          }}
           className={cn(
             "w-full flex items-center rounded-xl px-3 py-2.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors",
             isCollapsed && !isMobile ? "justify-center" : "space-x-3"

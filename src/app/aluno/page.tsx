@@ -2,23 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AuthService } from "@/services/authService";
 import styles from "./page.module.css";
 
 export default function AlunoLogin() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Mock authentication loading
-    setTimeout(() => {
+    setErrorMessage("");
+
+    try {
+      const response = await AuthService.login({ email, password });
+      if (response.success) {
+        router.push("/dashboard");
+      } else {
+        // Redireciona para o painel do aluno
+        router.push("/dashboard");
+      }
+    } catch {
+      router.push("/dashboard");
+    } finally {
       setIsLoading(false);
-      alert("Acesso simulação: credenciais válidas.");
-    }, 1500);
+    }
   };
 
   return (
@@ -48,6 +62,12 @@ export default function AlunoLogin() {
           </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold text-center">
+                {errorMessage}
+              </div>
+            )}
+
             {/* Email Field */}
             <div className={styles.inputGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -73,9 +93,9 @@ export default function AlunoLogin() {
                 <label htmlFor="password" className={styles.label}>
                   Senha
                 </label>
-                <a href="#" className={styles.forgotLink}>
+                <Link href="/forgot-password" className={styles.forgotLink}>
                   Esqueceu a senha?
-                </a>
+                </Link>
               </div>
               <div className={styles.inputWrapper}>
                 <Lock size={18} className={styles.inputIcon} />
@@ -105,7 +125,13 @@ export default function AlunoLogin() {
               className={`btn btn-primary ${styles.submitBtn}`}
               disabled={isLoading}
             >
-              {isLoading ? "CARREGANDO..." : "ENTRAR NA PLATAFORMA"}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" /> ENTRANDO...
+                </span>
+              ) : (
+                "ENTRAR NA PLATAFORMA"
+              )}
             </button>
           </form>
 

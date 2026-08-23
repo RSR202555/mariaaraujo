@@ -81,7 +81,7 @@ const statusStyles: Record<WorkQueueStatus, { label: string; badge: string }> = 
   },
 };
 
-export function WorkQueue({ items = defaultQueue }: WorkQueueProps) {
+export function WorkQueue({ items = [] }: WorkQueueProps) {
   const [filter, setFilter] = useState<string>("todos");
   const [search, setSearch] = useState<string>("");
 
@@ -133,59 +133,66 @@ export function WorkQueue({ items = defaultQueue }: WorkQueueProps) {
         </div>
       </div>
 
-      {/* Clean Linear Data Rows */}
-      <div className="divide-y divide-[#262626]">
-        {filteredItems.map((item) => {
-          const style = statusStyles[item.status];
-          return (
-            <div
-              key={item.id}
-              className="p-4 flex items-center justify-between hover:bg-[#1B1B1B]/40 transition-colors group"
-            >
-              <div className="flex items-center space-x-3.5 min-w-0">
-                <Avatar className="h-9 w-9 border border-white/10 shrink-0">
-                  <AvatarImage src={item.studentAvatar} alt={item.studentName} />
-                  <AvatarFallback>AL</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <span className="text-xs font-bold text-white block truncate group-hover:text-primary transition-colors">
-                    {item.studentName}
+      {/* Clean Linear Data Rows or Empty State */}
+      {filteredItems.length === 0 ? (
+        <div className="p-8 text-center space-y-2">
+          <p className="text-sm font-semibold text-gray-300">Nenhuma aluna na fila de prescrição</p>
+          <p className="text-xs text-muted-foreground">Novos cadastros e pedidos de ficha aparecerão aqui automaticamente.</p>
+        </div>
+      ) : (
+        <div className="divide-y divide-[#262626]">
+          {filteredItems.map((item) => {
+            const style = statusStyles[item.status];
+            return (
+              <div
+                key={item.id}
+                className="p-4 flex items-center justify-between hover:bg-[#1B1B1B]/40 transition-colors group"
+              >
+                <div className="flex items-center space-x-3.5 min-w-0">
+                  <Avatar className="h-9 w-9 border border-white/10 shrink-0">
+                    <AvatarImage src={item.studentAvatar} alt={item.studentName} />
+                    <AvatarFallback>AL</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-white block truncate group-hover:text-primary transition-colors">
+                      {item.studentName}
+                    </span>
+                    <span className="text-[0.68rem] text-muted-foreground block truncate">
+                      {item.planName}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="hidden sm:flex items-center space-x-6">
+                  <div className="text-right">
+                    <span className="text-[0.65rem] text-muted-foreground block font-medium">Compra</span>
+                    <span className="text-xs text-gray-300 font-bold">{item.purchaseDate}</span>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-[0.65rem] text-muted-foreground block font-medium">Espera</span>
+                    <span className="text-xs font-bold text-white">{item.daysWaiting} dia(s)</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3 shrink-0">
+                  <span className={`text-[0.65rem] font-bold uppercase px-2.5 py-1 rounded-md border ${style.badge}`}>
+                    {style.label}
                   </span>
-                  <span className="text-[0.68rem] text-muted-foreground block truncate">
-                    {item.planName}
-                  </span>
+
+                  <button
+                    onClick={() => alert(`Abrindo dossiê de ${item.studentName}`)}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
+                    aria-label={`Abrir dossiê de ${item.studentName}`}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-
-              <div className="hidden sm:flex items-center space-x-6">
-                <div className="text-right">
-                  <span className="text-[0.65rem] text-muted-foreground block font-medium">Compra</span>
-                  <span className="text-xs text-gray-300 font-bold">{item.purchaseDate}</span>
-                </div>
-
-                <div className="text-right">
-                  <span className="text-[0.65rem] text-muted-foreground block font-medium">Espera</span>
-                  <span className="text-xs font-bold text-white">{item.daysWaiting} dia(s)</span>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 shrink-0">
-                <span className={`text-[0.65rem] font-bold uppercase px-2.5 py-1 rounded-md border ${style.badge}`}>
-                  {style.label}
-                </span>
-
-                <button
-                  onClick={() => alert(`Abrindo dossiê de ${item.studentName}`)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
-                  aria-label={`Abrir dossiê de ${item.studentName}`}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

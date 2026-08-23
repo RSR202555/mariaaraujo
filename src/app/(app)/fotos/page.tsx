@@ -1,20 +1,18 @@
+"use client";
+
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Camera } from "lucide-react";
+import { FotosEvolucaoFeature } from "@/features/student/FotosEvolucaoFeature";
 
 export default function FotosPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Registro Visual"
-        title="Galeria de Fotos"
-        description="Comparativos de postura, evolução de físico e histórico de fotografias."
+        badge="Comparativo Corporal VIP"
+        title="Fotos de Evolução"
+        description="Acompanhamento visual quinzenal da sua transformação corporal com privacidade e ambiente criptografado."
       />
-      <EmptyState
-        icon={Camera}
-        title="Galeria de Fotos Pronta"
-        description="Esta rota do App Shell está integrada e aguardando a inclusão do componente de upload de fotos na próxima etapa."
-      />
+
+      <FotosEvolucaoFeature />
     </div>
   );
 }

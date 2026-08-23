@@ -3,7 +3,6 @@
 import { createServerSupabaseClient } from '@/database/server';
 import { EvaluationRepository } from '@/repositories/evaluation.repository';
 import { evaluationPhotoUploadSchema, EvaluationPhotoUploadInput } from '@/schemas/evaluation.schema';
-import { AzureAIProvider } from '@/providers/azure-ai.provider';
 
 export async function requestEvaluationAction(notes?: string) {
   const supabase = await createServerSupabaseClient();
@@ -36,20 +35,12 @@ export async function registerEvaluationPhotoAction(input: EvaluationPhotoUpload
 
   const { evaluationId, cloudinaryPublicId, secureUrl, photoType } = validation.data;
 
-  // Analisar imagem usando Azure AI em background (qualidade, iluminação)
-  let aiAnalysis = {};
-  try {
-    aiAnalysis = await AzureAIProvider.analyzeEvaluationPhoto(secureUrl);
-  } catch (aiErr) {
-    console.error('Erro na análise Azure AI:', aiErr);
-  }
-
   const photo = await EvaluationRepository.addPhoto({
     evaluation_id: evaluationId,
     cloudinary_public_id: cloudinaryPublicId,
     secure_url: secureUrl,
     photo_type: photoType,
-    ai_analysis_json: aiAnalysis,
+    ai_analysis_json: { status: 'received' },
   });
 
   return { success: true, photo };

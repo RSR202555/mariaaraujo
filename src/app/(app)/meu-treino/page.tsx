@@ -1,20 +1,18 @@
+"use client";
+
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Dumbbell } from "lucide-react";
+import { MeuTreinoFeature } from "@/features/student/MeuTreinoFeature";
 
 export default function MeuTreinoPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Protocolos Físicos"
+        badge="Protocolos Físicos VIP"
         title="Meu Treino"
-        description="Ficha digital de exercícios, vídeos explicativos de execução e controle de cargas."
+        description="Sua ficha digital completa de exercícios, controle individual de cargas, vídeos demonstrativos e acompanhamento de séries."
       />
-      <EmptyState
-        icon={Dumbbell}
-        title="Ficha de Treino em Preparação"
-        description="Esta rota do App Shell está preparada para receber os componentes específicos de treino no próximo módulo."
-      />
+
+      <MeuTreinoFeature />
     </div>
   );
 }

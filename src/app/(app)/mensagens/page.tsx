@@ -1,20 +1,30 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { MessageSquare } from "lucide-react";
+import { MensagensFeature } from "@/features/student/MensagensFeature";
+import { AdminMensagensFeature } from "@/features/admin/AdminMensagensFeature";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function MensagensPage() {
+  const { user } = useAuth();
+  const pathname = usePathname();
+
+  const isAdminRole = user?.role === "ADMIN" || user?.role === "admin" || user?.role === "PERSONAL" || pathname.startsWith("/admin");
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Suporte Direto"
-        title="Mensagens"
-        description="Canal direto de comunicação com a equipe Maria Araújo Personal."
+        badge={isAdminRole ? "Painel de Atendimento Admin" : "Suporte Prioritário Direto"}
+        title={isAdminRole ? "Central de Mensagens das Alunas" : "Mensagens & Chat"}
+        description={
+          isAdminRole
+            ? "Responda as dúvidas das suas alunas VIP em tempo real com histórico unificado de conversas."
+            : "Canal direto de comunicação com a Maria Araújo para tirar dúvidas sobre treinos, cargas e dieta."
+        }
       />
-      <EmptyState
-        icon={MessageSquare}
-        title="Chat Direto Pronto"
-        description="Esta rota do App Shell receberá o módulo de troca de mensagens e envio de vídeos de execução."
-      />
+
+      {isAdminRole ? <AdminMensagensFeature /> : <MensagensFeature />}
     </div>
   );
 }

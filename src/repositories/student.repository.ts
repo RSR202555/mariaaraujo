@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/database/server';
 import { createAdminClient } from '@/database/service-role';
+import { ConsultancyStatus } from '@/types/database.types';
 
 export class StudentRepository {
   static async findById(id: string) {
@@ -42,7 +43,7 @@ export class StudentRepository {
     return data;
   }
 
-  static async updateStatus(studentId: string, status: string) {
+  static async updateStatus(studentId: string, status: ConsultancyStatus) {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from('students')

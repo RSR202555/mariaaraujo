@@ -63,7 +63,7 @@ const typeIcons: Record<string, any> = {
   user: UserPlus,
 };
 
-export function ActivityTimeline({ events = defaultEvents }: ActivityTimelineProps) {
+export function ActivityTimeline({ events = [] }: ActivityTimelineProps) {
   return (
     <div className="bg-[#141414] border border-[#262626] rounded-3xl p-6 sm:p-7 text-left space-y-5 shadow-2xl group hover:border-primary/40 transition-colors">
       <div className="flex items-center justify-between">
@@ -78,32 +78,39 @@ export function ActivityTimeline({ events = defaultEvents }: ActivityTimelinePro
         </span>
       </div>
 
-      <div className="relative pl-6 space-y-4 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#262626]">
-        {events.map((evt) => {
-          const IconComp = typeIcons[evt.type] || Activity;
-          return (
-            <motion.div
-              key={evt.id}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative flex items-start space-x-3"
-            >
-              <div className="absolute -left-6 top-0.5 w-6 h-6 rounded-full bg-[#090909] border border-primary/40 text-primary flex items-center justify-center">
-                <IconComp className="h-3 w-3" />
-              </div>
-
-              <div className="bg-[#090909] border border-[#262626] rounded-2xl p-3 flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white uppercase">{evt.title}</span>
-                  <span className="text-[0.62rem] text-muted-foreground">{evt.timeAgo}</span>
+      {events.length === 0 ? (
+        <div className="p-6 text-center space-y-1 bg-[#090909] border border-[#262626] rounded-2xl">
+          <p className="text-xs font-semibold text-gray-300">Nenhuma atividade recente registrada</p>
+          <p className="text-[0.7rem] text-muted-foreground">Notificações e ações em tempo real aparecerão nesta timeline.</p>
+        </div>
+      ) : (
+        <div className="relative pl-6 space-y-4 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#262626]">
+          {events.map((evt) => {
+            const IconComp = typeIcons[evt.type] || Activity;
+            return (
+              <motion.div
+                key={evt.id}
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative flex items-start space-x-3"
+              >
+                <div className="absolute -left-6 top-0.5 w-6 h-6 rounded-full bg-[#090909] border border-primary/40 text-primary flex items-center justify-center">
+                  <IconComp className="h-3 w-3" />
                 </div>
-                <p className="text-[0.7rem] text-muted-foreground mt-0.5">{evt.description}</p>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+
+                <div className="bg-[#090909] border border-[#262626] rounded-2xl p-3 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white uppercase">{evt.title}</span>
+                    <span className="text-[0.62rem] text-muted-foreground">{evt.timeAgo}</span>
+                  </div>
+                  <p className="text-[0.7rem] text-muted-foreground mt-0.5">{evt.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

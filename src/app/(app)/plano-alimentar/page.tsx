@@ -1,20 +1,18 @@
+"use client";
+
 import { PageHeader } from "@/components/shell/PageHeader";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Utensils } from "lucide-react";
+import { PlanoAlimentarFeature } from "@/features/student/PlanoAlimentarFeature";
 
 export default function PlanoAlimentarPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
-        badge="Nutrição Estratégica"
+        badge="Nutrição Estratégica VIP"
         title="Plano Alimentar"
-        description="Prescrição nutricional personalizada, horários de refeição e tabela de substituições."
+        description="Sua dieta individualizada com horários, detalhamento de macronutrientes, acompanhamento de hidratação e tabela de substituições."
       />
-      <EmptyState
-        icon={Utensils}
-        title="Estrutura de Dieta Pronta"
-        description="Esta rota do App Shell está preparada para receber a tabela de alimentos e macros na próxima etapa."
-      />
+
+      <PlanoAlimentarFeature />
     </div>
   );
 }
