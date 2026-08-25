@@ -1,3 +1,10 @@
+// ============================================================
+// ASAAS PAYMENT GATEWAY PROVIDER
+// Integração REST com a API do Asaas (Produção / Sandbox)
+// ============================================================
+
+// --- Input Interfaces ---
+
 export interface AsaasCustomerInput {
   name: string;
   email: string;
@@ -28,8 +35,46 @@ export interface AsaasSubscriptionInput {
   };
 }
 
+// --- Response Interfaces ---
+
+export interface AsaasCustomerResponse {
+  id: string;
+  name: string;
+  email: string;
+  cpfCnpj: string;
+}
+
+export interface AsaasSubscriptionResponse {
+  id: string;
+  customer: string;
+  value: number;
+  status: string;
+  billingType: string;
+  nextDueDate: string;
+}
+
+export interface AsaasPaymentResponse {
+  id: string;
+  customer: string;
+  subscription: string | null;
+  value: number;
+  status: string;
+  billingType: string;
+  invoiceUrl: string;
+  bankSlipUrl: string | null;
+  paymentDate: string | null;
+}
+
+export interface AsaasPixQrCodeResponse {
+  encodedImage: string;       // QR Code em Base64
+  payload: string;            // Código PIX Copia e Cola
+  expirationDate: string;
+}
+
+// --- Provider Class ---
+
 export class AsaasProvider {
-  private static apiUrl = process.env.ASAAS_API_URL || 'https://sandbox.asaas.com/api/v3';
+  private static apiUrl = process.env.ASAAS_API_URL || 'https://api.asaas.com/api/v3';
   private static apiKey = process.env.ASAAS_API_KEY || '';
 
   private static getHeaders() {
@@ -40,77 +85,132 @@ export class AsaasProvider {
   }
 
   /**
-   * Cria um cliente no Asaas
+   * Faz uma requisição à API do Asaas com tratamento de erro padrão
    */
-  static async createCustomer(input: AsaasCustomerInput) {
-    const response = await fetch(`${this.apiUrl}/customers`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(input),
+  private static async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.apiUrl}${endpoint}`;
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...this.getHeaders(),
+        ...(options.headers || {}),
+      },
     });
 
     const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(`AsaasProvider.createCustomer: ${data.errors?.[0]?.description || 'Erro ao criar cliente'}`);
+      const errorMsg = data.errors?.[0]?.description || data.message || 'Erro na requisição ao Asaas';
+      throw new Error(`AsaasProvider [${response.status}]: ${errorMsg}`);
     }
 
-    return {
-      id: data.id as string,
-      name: data.name as string,
-      email: data.email as string,
-    };
+    return data as T;
   }
+
+  // ============================================================
+  // CUSTOMERS
+  // ============================================================
+
+  /**
+   * Busca um cliente existente no Asaas pelo CPF/CNPJ.
+   * Evita criar clientes duplicados em produção.
+   */
+  static async findCustomerByCpfCnpj(cpfCnpj: string): Promise<AsaasCustomerResponse | null> {
+    try {
+      const data = await this.request<{ data: AsaasCustomerResponse[] }>(
+        `/customers?cpfCnpj=${cpfCnpj}`
+      );
+      if (data.data && data.data.length > 0) {
+        return data.data[0];
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Cria um cliente no Asaas
+   */
+  static async createCustomer(input: AsaasCustomerInput): Promise<AsaasCustomerResponse> {
+    return this.request<AsaasCustomerResponse>('/customers', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  }
+
+  /**
+   * Busca cliente existente por CPF ou cria um novo.
+   * Estratégia recomendada para produção — evita duplicatas.
+   */
+  static async findOrCreateCustomer(input: AsaasCustomerInput): Promise<AsaasCustomerResponse> {
+    if (input.cpfCnpj) {
+      const existing = await this.findCustomerByCpfCnpj(input.cpfCnpj);
+      if (existing) {
+        console.log(`[AsaasProvider] Cliente existente encontrado: ${existing.id}`);
+        return existing;
+      }
+    }
+    console.log(`[AsaasProvider] Criando novo cliente: ${input.name}`);
+    return this.createCustomer(input);
+  }
+
+  // ============================================================
+  // SUBSCRIPTIONS
+  // ============================================================
 
   /**
    * Cria uma assinatura recorrente no Asaas (PIX, Cartão ou Boleto)
    */
-  static async createSubscription(input: AsaasSubscriptionInput) {
-    const response = await fetch(`${this.apiUrl}/subscriptions`, {
+  static async createSubscription(input: AsaasSubscriptionInput): Promise<AsaasSubscriptionResponse> {
+    return this.request<AsaasSubscriptionResponse>('/subscriptions', {
       method: 'POST',
-      headers: this.getHeaders(),
       body: JSON.stringify(input),
     });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(`AsaasProvider.createSubscription: ${data.errors?.[0]?.description || 'Erro ao criar assinatura no Asaas'}`);
-    }
-
-    return {
-      id: data.id as string,
-      customer: data.customer as string,
-      value: data.value as number,
-      status: data.status as string,
-      billingType: data.billingType as string,
-      nextDueDate: data.nextDueDate as string,
-    };
   }
+
+  /**
+   * Lista as cobranças (payments) vinculadas a uma assinatura
+   */
+  static async getSubscriptionPayments(subscriptionId: string): Promise<AsaasPaymentResponse[]> {
+    const data = await this.request<{ data: AsaasPaymentResponse[] }>(
+      `/subscriptions/${subscriptionId}/payments`
+    );
+    return data.data || [];
+  }
+
+  // ============================================================
+  // PAYMENTS
+  // ============================================================
 
   /**
    * Consulta o status de um pagamento individual no Asaas
    */
-  static async getPayment(paymentId: string) {
-    const response = await fetch(`${this.apiUrl}/payments/${paymentId}`, {
-      method: 'GET',
-      headers: this.getHeaders(),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(`AsaasProvider.getPayment: ${data.errors?.[0]?.description || 'Erro ao consultar pagamento no Asaas'}`);
-    }
-
-    return {
-      id: data.id as string,
-      customer: data.customer as string,
-      subscription: data.subscription as string,
-      value: data.value as number,
-      status: data.status as string,
-      billingType: data.billingType as string,
-      invoiceUrl: data.invoiceUrl as string,
-      paymentDate: data.paymentDate as string,
-    };
+  static async getPayment(paymentId: string): Promise<AsaasPaymentResponse> {
+    return this.request<AsaasPaymentResponse>(`/payments/${paymentId}`);
   }
+
+  /**
+   * Busca o QR Code PIX de um pagamento pendente.
+   * Só funciona para cobranças com billingType = PIX e status = PENDING.
+   */
+  static async getPixQrCode(paymentId: string): Promise<AsaasPixQrCodeResponse | null> {
+    try {
+      return await this.request<AsaasPixQrCodeResponse>(
+        `/payments/${paymentId}/pixQrCode`
+      );
+    } catch (error) {
+      console.warn(`[AsaasProvider] Não foi possível obter QR Code PIX para ${paymentId}:`, error);
+      return null;
+    }
+  }
+
+  // ============================================================
+  // WEBHOOKS & STATUS
+  // ============================================================
 
   /**
    * Valida o token de segurança nos Webhooks do Asaas

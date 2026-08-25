@@ -18,6 +18,7 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CheckoutInput } from "@/schemas/checkoutSchema";
@@ -46,6 +47,22 @@ const planDetails: Record<
   },
 };
 
+interface CheckoutResponse {
+  success: boolean;
+  mode: "simulation" | "live";
+  subscriptionId: string;
+  customerId: string;
+  paymentId: string | null;
+  billingType: string;
+  value: number;
+  planTitle: string;
+  nextDueDate?: string;
+  invoiceUrl: string | null;
+  bankSlipUrl: string | null;
+  pixQrCode: string | null;       // Base64 encoded image
+  pixCopiaECola: string | null;   // PIX copia-e-cola text code
+}
+
 function AsaasCheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -62,7 +79,7 @@ function AsaasCheckoutContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [checkoutResult, setCheckoutResult] = useState<any>(null);
+  const [checkoutResult, setCheckoutResult] = useState<CheckoutResponse | null>(null);
   const [copiedPix, setCopiedPix] = useState(false);
 
   const currentPlanInfo = planDetails[selectedPlan];
@@ -96,7 +113,7 @@ function AsaasCheckoutContent() {
         return;
       }
 
-      setCheckoutResult(data);
+      setCheckoutResult(data as CheckoutResponse);
     } catch (err: any) {
       setIsSubmitting(false);
       setErrorMessage(err.message || "Erro de conexão com o gateway Asaas");
@@ -104,8 +121,9 @@ function AsaasCheckoutContent() {
   };
 
   const handleCopyPix = () => {
-    if (checkoutResult?.pixQrCode) {
-      navigator.clipboard.writeText(checkoutResult.pixQrCode);
+    const codeToCopy = checkoutResult?.pixCopiaECola || checkoutResult?.pixQrCode;
+    if (codeToCopy) {
+      navigator.clipboard.writeText(codeToCopy);
       setCopiedPix(true);
       setTimeout(() => setCopiedPix(false), 2500);
     }
@@ -140,13 +158,13 @@ function AsaasCheckoutContent() {
 
         {/* Step Progression Bar */}
         <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold uppercase tracking-wider">
-          <div className="bg-primary/20 border border-primary text-primary p-2.5 rounded-xl">
+          <div className={`p-2.5 rounded-xl border ${!checkoutResult ? "bg-primary/20 border-primary text-primary" : "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"}`}>
             1. Plano Selecionado
           </div>
-          <div className="bg-[#141414] border border-[#262626] text-white p-2.5 rounded-xl">
+          <div className={`p-2.5 rounded-xl border ${!checkoutResult ? "bg-[#141414] border-[#262626] text-white" : "bg-emerald-500/15 border-emerald-500/30 text-emerald-400"}`}>
             2. Dados Asaas
           </div>
-          <div className="bg-[#141414] border border-[#262626] text-muted-foreground p-2.5 rounded-xl">
+          <div className={`p-2.5 rounded-xl border ${checkoutResult ? "bg-primary/20 border-primary text-primary" : "bg-[#141414] border-[#262626] text-muted-foreground"}`}>
             3. Confirmação
           </div>
         </div>
@@ -361,7 +379,7 @@ function AsaasCheckoutContent() {
             </div>
           </div>
         ) : (
-          /* Payment Generated Confirmation Screen */
+          /* ===== PAYMENT GENERATED — CONFIRMATION SCREEN ===== */
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -379,26 +397,35 @@ function AsaasCheckoutContent() {
                 {checkoutResult.planTitle || currentPlanInfo.name}
               </h2>
               <p className="text-xs text-muted-foreground">
-                Assinatura registrada com sucesso no valor de <strong className="text-white">R$ {checkoutResult.value}</strong>.
+                Assinatura registrada com sucesso no valor de <strong className="text-white">R$ {checkoutResult.value?.toFixed(2)}</strong>.
               </p>
             </div>
 
-            {/* PIX QR Code Container if PIX selected */}
-            {billingType === "PIX" && (
+            {/* ===== PIX PAYMENT — QR Code Real ===== */}
+            {checkoutResult.billingType === "PIX" && (
               <div className="bg-[#090909] border border-[#262626] p-6 rounded-2xl space-y-4 max-w-md mx-auto">
                 <div className="flex items-center justify-center space-x-2 text-xs font-bold text-primary uppercase">
                   <QrCode className="h-4 w-4" />
                   <span>Pagamento Instantâneo via PIX</span>
                 </div>
 
+                {/* QR Code Image */}
                 <div className="bg-white p-4 rounded-xl inline-block">
-                  {/* Visual QR Code Representation */}
-                  <div className="w-44 h-44 bg-black/90 flex items-center justify-center text-white text-xs font-bold p-2 text-center rounded-lg">
-                    [QR CODE PIX ASAAS]
-                  </div>
+                  {checkoutResult.pixQrCode ? (
+                    <img
+                      src={`data:image/png;base64,${checkoutResult.pixQrCode}`}
+                      alt="QR Code PIX para pagamento"
+                      className="w-44 h-44 rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-44 h-44 bg-gray-100 flex items-center justify-center text-gray-500 text-xs font-bold p-2 text-center rounded-lg">
+                      QR Code indisponível — use o link de fatura abaixo
+                    </div>
+                  )}
                 </div>
 
-                {checkoutResult.pixQrCode && (
+                {/* Copy PIX Copia e Cola */}
+                {(checkoutResult.pixCopiaECola || checkoutResult.pixQrCode) && (
                   <div className="space-y-2">
                     <Button
                       onClick={handleCopyPix}
@@ -419,6 +446,44 @@ function AsaasCheckoutContent() {
                     </Button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ===== BOLETO — Link do Boleto ===== */}
+            {checkoutResult.billingType === "BOLETO" && checkoutResult.bankSlipUrl && (
+              <div className="bg-[#090909] border border-[#262626] p-6 rounded-2xl space-y-4 max-w-md mx-auto">
+                <div className="flex items-center justify-center space-x-2 text-xs font-bold text-primary uppercase">
+                  <FileText className="h-4 w-4" />
+                  <span>Boleto Bancário Gerado</span>
+                </div>
+                <a
+                  href={checkoutResult.bankSlipUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-full py-5 rounded-full text-xs font-bold uppercase tracking-wider border-white/10"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4 text-primary" />
+                    <span>ABRIR BOLETO PARA PAGAMENTO</span>
+                  </Button>
+                </a>
+              </div>
+            )}
+
+            {/* ===== INVOICE URL — Link Geral da Fatura Asaas ===== */}
+            {checkoutResult.invoiceUrl && (
+              <div className="pt-2">
+                <a
+                  href={checkoutResult.invoiceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-xs text-primary hover:text-primary/80 transition-colors underline underline-offset-2"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  <span>Acessar fatura completa no Asaas</span>
+                </a>
               </div>
             )}
 

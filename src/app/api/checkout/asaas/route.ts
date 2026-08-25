@@ -46,12 +46,17 @@ export async function POST(req: NextRequest) {
         value: plan.value,
         planTitle: plan.title,
         invoiceUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/cadastro?plan=${planId}&payment_id=${mockPaymentId}`,
-        pixQrCode: "00020126580014BR.GOV.BCB.PIX0136123e4567-e89b-12d3-a456-4266141740005204000053039865405200.005802BR5920Maria Araujo Personal6009Sao Paulo62070503***6304E2CA",
+        pixQrCode: null,
+        pixCopiaECola: "00020126580014BR.GOV.BCB.PIX0136123e4567-e89b-12d3-a456-4266141740005204000053039865405200.005802BR5920Maria Araujo Personal6009Sao Paulo62070503***6304E2CA",
       });
     }
 
-    // 1. Criar ou buscar cliente no Asaas
-    const customer = await AsaasProvider.createCustomer({
+    // =====================================================
+    // FLUXO REAL — ASAAS API (Produção)
+    // =====================================================
+
+    // 1. Buscar ou criar cliente no Asaas (evita duplicatas por CPF)
+    const customer = await AsaasProvider.findOrCreateCustomer({
       name: fullName,
       email,
       cpfCnpj,
@@ -68,15 +73,50 @@ export async function POST(req: NextRequest) {
       description: `Assinatura ${plan.title} - Maria Araújo Personal`,
     });
 
+    // 3. Buscar a primeira cobrança gerada pela assinatura
+    let invoiceUrl: string | null = null;
+    let pixQrCodeBase64: string | null = null;
+    let pixCopiaECola: string | null = null;
+    let firstPaymentId: string | null = null;
+    let bankSlipUrl: string | null = null;
+
+    try {
+      const payments = await AsaasProvider.getSubscriptionPayments(subscription.id);
+
+      if (payments.length > 0) {
+        const firstPayment = payments[0];
+        firstPaymentId = firstPayment.id;
+        invoiceUrl = firstPayment.invoiceUrl;
+        bankSlipUrl = firstPayment.bankSlipUrl;
+
+        // 4. Se PIX, buscar QR Code
+        if (billingType === "PIX") {
+          const pixData = await AsaasProvider.getPixQrCode(firstPayment.id);
+          if (pixData) {
+            pixQrCodeBase64 = pixData.encodedImage;
+            pixCopiaECola = pixData.payload;
+          }
+        }
+      }
+    } catch (paymentError) {
+      // Log mas não bloqueia — a assinatura já foi criada com sucesso
+      console.warn("[Asaas Checkout] Erro ao buscar dados da primeira cobrança:", paymentError);
+    }
+
     return NextResponse.json({
       success: true,
       mode: "live",
       subscriptionId: subscription.id,
       customerId: subscription.customer,
+      paymentId: firstPaymentId,
       billingType: subscription.billingType,
       value: subscription.value,
       planTitle: plan.title,
       nextDueDate: subscription.nextDueDate,
+      invoiceUrl,
+      bankSlipUrl,
+      pixQrCode: pixQrCodeBase64,
+      pixCopiaECola,
     });
   } catch (error: any) {
     console.error("[Asaas Checkout Route Error]:", error);
