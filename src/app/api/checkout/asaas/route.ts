@@ -80,7 +80,13 @@ export async function POST(req: NextRequest) {
     let firstPaymentId: string | null = null;
     let bankSlipUrl: string | null = null;
 
+    // Helper: aguardar N milissegundos
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
     try {
+      // Pequeno delay para o Asaas processar a cobrança internamente
+      await sleep(2000);
+
       const payments = await AsaasProvider.getSubscriptionPayments(subscription.id);
 
       if (payments.length > 0) {
@@ -89,9 +95,16 @@ export async function POST(req: NextRequest) {
         invoiceUrl = firstPayment.invoiceUrl;
         bankSlipUrl = firstPayment.bankSlipUrl;
 
-        // 4. Se PIX, buscar QR Code
+        // 4. Se PIX, buscar QR Code com retry
         if (billingType === "PIX") {
-          const pixData = await AsaasProvider.getPixQrCode(firstPayment.id);
+          let pixData = await AsaasProvider.getPixQrCode(firstPayment.id);
+
+          // Retry: se não retornou na primeira tentativa, aguardar mais e tentar novamente
+          if (!pixData) {
+            await sleep(3000);
+            pixData = await AsaasProvider.getPixQrCode(firstPayment.id);
+          }
+
           if (pixData) {
             pixQrCodeBase64 = pixData.encodedImage;
             pixCopiaECola = pixData.payload;
