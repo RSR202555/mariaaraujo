@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { AsaasProvider } from '@/providers/asaas.provider';
+
 import { createAdminClient } from '@/database/service-role';
 
 export async function GET() {
@@ -14,7 +14,9 @@ export async function GET() {
         serviceRoleConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
         connection: 'untested',
       },
-      asaas: AsaasProvider.getStatus(),
+      mercadopago: {
+        configured: Boolean(process.env.MP_ACCESS_TOKEN),
+      },
       resend: {
         configured: Boolean(process.env.RESEND_API_KEY),
         defaultFrom: process.env.RESEND_DEFAULT_FROM || 'Maria Araújo Personal <contato@mariaaraujopersonal.com.br>',

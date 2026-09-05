@@ -25,11 +25,11 @@ export default function FAQ() {
     },
     {
       question: "TEREI SUPORTE DIRETO COM A MARIA?",
-      answer: "Sim! Nos planos Premium e Elite VIP, você tem contato direto via WhatsApp para tirar dúvidas de treinos, ajustes nos protocolos e suporte contínuo de execução através da análise de vídeos de seus treinos.",
+      answer: "Sim! Em todos os planos, você tem contato direto via WhatsApp para tirar dúvidas de treinos, ajustes nos protocolos e suporte contínuo de execução através da análise de vídeos de seus treinos.",
     },
     {
       question: "COMO FUNCIONA O ACOMPANHAMENTO DOS TREINOS?",
-      answer: "Nos planos Premium e Elite VIP, você recebe o planejamento de treino de alta performance com análises periódicas e suporte técnico contínuo.",
+      answer: "Em todos os planos, você recebe o planejamento de treino de alta performance com análises periódicas e suporte técnico contínuo. Além disso, no plano Semestral você tem direito a 1 treino presencial em Salvador.",
     },
   ];
 

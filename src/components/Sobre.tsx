@@ -90,8 +90,8 @@ export default function Sobre() {
                   <GraduationCap size={20} className={styles.icon} />
                 </div>
                 <div>
-                  <h4 className={styles.featureTitle}>Educação Física & Fisiologia</h4>
-                  <p className={styles.featureDesc}>Formação sólida com especialização em Fisiologia do Exercício aplicada.</p>
+                  <h4 className={styles.featureTitle}>Educação Física</h4>
+                  <p className={styles.featureDesc}>Formação sólida em Educação Física.</p>
                 </div>
               </motion.div>
 
@@ -110,8 +110,8 @@ export default function Sobre() {
                   <Award size={20} className={styles.icon} />
                 </div>
                 <div>
-                  <h4 className={styles.featureTitle}>Certificação Internacional</h4>
-                  <p className={styles.featureDesc}>Especialista em biomecânica e treinamento de força de alta performance.</p>
+                  <h4 className={styles.featureTitle}>Atleta Wellness</h4>
+                  <p className={styles.featureDesc}>Atleta de fisiculturismo há 8 anos, com uma trajetória construída dentro do esporte e múltiplos títulos Overall na categoria Wellness.</p>
                 </div>
               </motion.div>
             </div>

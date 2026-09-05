@@ -29,6 +29,29 @@ export class StudentRepository {
     return data;
   }
 
+  static async findByEmail(email: string) {
+    const supabase = createAdminClient();
+    // Primeiro encontra o profile pelo email, depois o student
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (!profile) return null;
+
+    const { data: student, error } = await supabase
+      .from('students')
+      .select('*, profiles(*)')
+      .eq('profile_id', profile.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      throw new Error(`StudentRepository.findByEmail: ${error.message}`);
+    }
+    return student;
+  }
+
   static async findByAsaasCustomerId(asaasCustomerId: string) {
     const supabase = createAdminClient();
     const { data, error } = await supabase
