@@ -56,6 +56,8 @@ export interface StudentItem {
   age: number;
   anamnesisSummary: string;
   lastActive: string;
+  mfitLink?: string;
+  dietboxLink?: string;
 }
 
 const DEFAULT_ACTIVE_STUDENT: StudentItem = {
@@ -78,6 +80,8 @@ const DEFAULT_ACTIVE_STUDENT: StudentItem = {
   age: 26,
   anamnesisSummary: "Anamnese completa respondida. Foco em hipertrofia de membros inferiores, sem lesões articulares.",
   lastActive: "Ativo agora",
+  mfitLink: "",
+  dietboxLink: "",
 };
 
 // Converte YYYY-MM-DD para DD/MM/YYYY
@@ -120,6 +124,8 @@ export function AlunasManagement() {
   const [editAge, setEditAge] = useState("");
   const [editGoal, setEditGoal] = useState("");
   const [editAnamnesis, setEditAnamnesis] = useState("");
+  const [editMfitLink, setEditMfitLink] = useState("");
+  const [editDietboxLink, setEditDietboxLink] = useState("");
   const [isSavedNotice, setIsSavedNotice] = useState(false);
 
   // New Student Form State
@@ -138,6 +144,8 @@ export function AlunasManagement() {
     height: "165",
     age: "25",
     anamnesisSummary: "Foco em recomposição corporal e ganho de massa magra.",
+    mfitLink: "",
+    dietboxLink: "",
   });
 
   // Carregar alunas do localStorage e Supabase
@@ -227,6 +235,8 @@ export function AlunasManagement() {
       setEditAge(selectedStudent.age ? String(selectedStudent.age) : "25");
       setEditGoal(selectedStudent.goal || "Emagrecimento & Definição");
       setEditAnamnesis(selectedStudent.anamnesisSummary || "Anamnese completa respondida.");
+      setEditMfitLink(selectedStudent.mfitLink || "");
+      setEditDietboxLink(selectedStudent.dietboxLink || "");
       setIsSavedNotice(false);
     }
   }, [selectedStudent]);
@@ -298,6 +308,8 @@ export function AlunasManagement() {
       age: parseInt(newStudent.age) || 25,
       anamnesisSummary: newStudent.anamnesisSummary || "Anamnese completa cadastrada.",
       lastActive: "Recém adicionada",
+      mfitLink: newStudent.mfitLink,
+      dietboxLink: newStudent.dietboxLink,
     };
 
     const updatedList = [created, ...students];
@@ -315,6 +327,8 @@ export function AlunasManagement() {
           ageYears: parseInt(newStudent.age) || 25,
           goalStr: newStudent.goal,
           anamnesis: newStudent.anamnesisSummary,
+          mfitLink: newStudent.mfitLink,
+          dietboxLink: newStudent.dietboxLink,
         })
       );
     }
@@ -334,6 +348,8 @@ export function AlunasManagement() {
       height: "165",
       age: "25",
       anamnesisSummary: "Foco em recomposição corporal e ganho de massa magra.",
+      mfitLink: "",
+      dietboxLink: "",
     });
     setIsAddModalOpen(false);
   };
@@ -360,6 +376,8 @@ export function AlunasManagement() {
       age: parseInt(editAge) || selectedStudent.age,
       goal: editGoal || selectedStudent.goal,
       anamnesisSummary: editAnamnesis || selectedStudent.anamnesisSummary,
+      mfitLink: editMfitLink,
+      dietboxLink: editDietboxLink,
     };
 
     const updatedList = students.map((s) => (s.id === selectedStudent.id ? updatedStudent : s));
@@ -386,6 +404,8 @@ export function AlunasManagement() {
           ageYears: parseInt(editAge) || selectedStudent.age,
           goalStr: editGoal,
           anamnesis: editAnamnesis,
+          mfitLink: editMfitLink,
+          dietboxLink: editDietboxLink,
         })
       );
     }
@@ -891,6 +911,34 @@ export function AlunasManagement() {
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Link MFIT (Treino)
+                </label>
+                <Input
+                  type="url"
+                  placeholder="https://mfit..."
+                  value={newStudent.mfitLink || ""}
+                  onChange={(e) => setNewStudent({ ...newStudent, mfitLink: e.target.value })}
+                  className="bg-[#121212] border-[#262626] text-xs text-white rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Link Dietbox (Dieta)
+                </label>
+                <Input
+                  type="url"
+                  placeholder="https://dietbox..."
+                  value={newStudent.dietboxLink || ""}
+                  onChange={(e) => setNewStudent({ ...newStudent, dietboxLink: e.target.value })}
+                  className="bg-[#121212] border-[#262626] text-xs text-white rounded-xl"
+                />
+              </div>
+            </div>
+
             <div className="pt-3 flex justify-end gap-2 border-t border-[#262626]">
               <Button
                 type="button"
@@ -1097,6 +1145,34 @@ export function AlunasManagement() {
                     onChange={(e) => setEditAnamnesis(e.target.value)}
                     className="w-full bg-[#141414] border border-[#262626] text-xs text-white rounded-xl p-2.5 focus:outline-none focus:border-primary"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[0.62rem] font-bold uppercase text-muted-foreground block mb-1">
+                      Link MFIT (Treino)
+                    </label>
+                    <Input
+                      type="url"
+                      placeholder="https://mfit..."
+                      value={editMfitLink}
+                      onChange={(e) => setEditMfitLink(e.target.value)}
+                      className="bg-[#141414] border-[#262626] text-xs text-white rounded-xl"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[0.62rem] font-bold uppercase text-muted-foreground block mb-1">
+                      Link Dietbox (Dieta)
+                    </label>
+                    <Input
+                      type="url"
+                      placeholder="https://dietbox..."
+                      value={editDietboxLink}
+                      onChange={(e) => setEditDietboxLink(e.target.value)}
+                      className="bg-[#141414] border-[#262626] text-xs text-white rounded-xl"
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -105,6 +105,8 @@ export type Database = {
           gender: string | null;
           height_cm: number | null;
           status: ConsultancyStatus;
+          mfit_link: string | null;
+          dietbox_link: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -117,6 +119,8 @@ export type Database = {
           gender?: string | null;
           height_cm?: number | null;
           status?: ConsultancyStatus;
+          mfit_link?: string | null;
+          dietbox_link?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -129,6 +133,8 @@ export type Database = {
           gender?: string | null;
           height_cm?: number | null;
           status?: ConsultancyStatus;
+          mfit_link?: string | null;
+          dietbox_link?: string | null;
           created_at?: string;
           updated_at?: string;
         };
