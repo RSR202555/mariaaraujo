@@ -102,9 +102,6 @@ export class MercadoPagoProvider {
           failure: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout?status=failure`,
           pending: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/checkout?status=pending`
         },
-        payment_methods: {
-          default_payment_method_id: "pix",
-        },
         // auto_return: 'approved',
         // notification_url: process.env.MP_WEBHOOK_URL,
       };
