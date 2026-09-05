@@ -27,7 +27,6 @@ export function MobileBottomNav() {
     { href: "/admin/alunas", icon: Users, label: "Alunas" },
     { href: "/admin/protocolos", icon: FileText, label: "Protocolos", badge: 7 },
     { href: "/admin/financeiro", icon: DollarSign, label: "Financeiro" },
-    { href: "/mensagens", icon: MessageSquare, label: "Chat", badge: 2 },
   ];
 
   // Atalhos para Área do Aluno VIP
@@ -36,7 +35,6 @@ export function MobileBottomNav() {
     { href: "/meu-treino", icon: Dumbbell, label: "Treino" },
     { href: "/plano-alimentar", icon: Utensils, label: "Dieta" },
     { href: "/minha-evolucao", icon: TrendingUp, label: "Evolução" },
-    { href: "/mensagens", icon: MessageSquare, label: "Chat", badge: 2 },
   ];
 
   const currentNavItems = isAdmin ? adminNavItems : studentNavItems;

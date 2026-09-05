@@ -52,7 +52,6 @@ export function Sidebar() {
     { href: "/minha-evolucao", icon: TrendingUp, label: "Minha Evolução" },
     { href: "/fotos", icon: Camera, label: "Fotos" },
     { href: "/avaliacoes", icon: ClipboardList, label: "Avaliações" },
-    { href: "/mensagens", icon: MessageSquare, label: "Mensagens" },
   ];
 
   // Menu de Navegação da Área Administrativa da Maria Personal
@@ -60,8 +59,7 @@ export function Sidebar() {
     { href: "/admin", icon: LayoutDashboard, label: "Painel Geral" },
     { href: "/admin/alunas", icon: Users, label: "Gestão de Alunas" },
     { href: "/admin/protocolos", icon: FileText, label: "Protocolos & Treinos" },
-    { href: "/admin/financeiro", icon: DollarSign, label: "Financeiro Asaas" },
-    { href: "/mensagens", icon: MessageSquare, label: "Mensagens" },
+    { href: "/admin/financeiro", icon: DollarSign, label: "Financeiro Mercado Pago" },
   ];
 
   const mainNavItems = isAdmin ? adminNavItems : studentNavItems;
