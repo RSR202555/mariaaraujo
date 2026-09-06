@@ -21,8 +21,10 @@ export function MobileBottomNav() {
 
   const isAdmin = pathname.startsWith("/admin");
 
+  type NavItem = { href: string; icon: any; label: string; badge?: number };
+
   // Atalhos para Área Administrativa da Maria Personal
-  const adminNavItems = [
+  const adminNavItems: NavItem[] = [
     { href: "/admin", icon: LayoutDashboard, label: "Painel" },
     { href: "/admin/alunas", icon: Users, label: "Alunas" },
     { href: "/admin/protocolos", icon: FileText, label: "Protocolos", badge: 7 },
@@ -30,14 +32,14 @@ export function MobileBottomNav() {
   ];
 
   // Atalhos para Área do Aluno VIP
-  const studentNavItems = [
+  const studentNavItems: NavItem[] = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Início" },
     { href: "/meu-treino", icon: Dumbbell, label: "Treino" },
     { href: "/plano-alimentar", icon: Utensils, label: "Dieta" },
     { href: "/minha-evolucao", icon: TrendingUp, label: "Evolução" },
   ];
 
-  const currentNavItems = isAdmin ? adminNavItems : studentNavItems;
+  const currentNavItems: NavItem[] = isAdmin ? adminNavItems : studentNavItems;
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090909]/95 border-t border-[#262626] backdrop-blur-xl px-2 py-2 flex items-center justify-around shadow-2xl">
