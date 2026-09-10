@@ -43,7 +43,7 @@ export function MessagePanel({ messages = [] }: MessagePanelProps) {
         <div className="flex items-center space-x-2">
           <MessageSquare className="h-4 w-4 text-primary" />
           <h3 className="text-xl font-black uppercase text-white tracking-tight">
-            Conversas com Alunas
+            Conversas com Alunos
           </h3>
         </div>
         <span className="text-[0.65rem] font-bold uppercase text-white bg-primary px-2.5 py-0.5 rounded-full shadow-md shadow-primary/30">
@@ -54,7 +54,7 @@ export function MessagePanel({ messages = [] }: MessagePanelProps) {
       {messages.length === 0 ? (
         <div className="p-5 text-center space-y-1 bg-[#090909] border border-[#262626] rounded-2xl">
           <p className="text-xs font-semibold text-gray-300">Nenhuma conversa pendente</p>
-          <p className="text-[0.68rem] text-muted-foreground">Mensagens diretas enviadas por alunas aparecerão aqui.</p>
+          <p className="text-[0.68rem] text-muted-foreground">Mensagens diretas enviadas por alunos aparecerão aqui.</p>
         </div>
       ) : (
         <div className="space-y-2.5">

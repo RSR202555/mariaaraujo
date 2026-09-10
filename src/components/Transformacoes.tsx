@@ -69,7 +69,7 @@ export default function Transformacoes() {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center space-x-2 bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Casos Reais de Alunas</span>
+            <span>Casos Reais de Alunos</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white font-serif">
@@ -78,7 +78,7 @@ export default function Transformacoes() {
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Resultados reais de alunas que aplicaram o método de consultoria da Maria Araújo. Clique nos cards para ampliar as imagens.
+            Resultados reais de alunos que aplicaram o método de consultoria da Maria Araújo. Clique nos cards para ampliar as imagens.
           </p>
         </div>
 
@@ -205,7 +205,7 @@ export default function Transformacoes() {
             SUA PRÓXIMA TRANSFORMAÇÃO COMEÇA HOJE
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
-            Junte-se às alunas que transformaram o corpo e a autoestima com prescrições 100% individualizadas.
+            Junte-se aos alunos que transformaram o corpo e a autoestima com prescrições 100% individualizadas.
           </p>
           <div className="pt-2">
             <a

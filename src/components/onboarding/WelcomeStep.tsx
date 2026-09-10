@@ -9,7 +9,7 @@ interface WelcomeStepProps {
   onNext: () => void;
 }
 
-export function WelcomeStep({ userName = "Aluna VIP", onNext }: WelcomeStepProps) {
+export function WelcomeStep({ userName = "Aluno VIP", onNext }: WelcomeStepProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

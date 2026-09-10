@@ -30,7 +30,7 @@ export default function Hero() {
   };
 
   const stats = [
-    { value: "+500", label: "Alunas Transformadas", icon: Users, detail: "Resultados reais comprovados" },
+    { value: "+500", label: "Alunos Transformados", icon: Users, detail: "Resultados reais comprovados" },
     { value: "100%", label: "Personalizado", icon: ShieldCheck, detail: "Metodologia única para sua rotina" },
     { value: "98%", label: "Taxa de Renovação", icon: Trophy, detail: "Fidelidade e satisfação" },
   ];
@@ -144,7 +144,7 @@ export default function Hero() {
             <a href="#consultorias" className="w-full sm:w-auto">
               <Button size="lg" variant="glow" className="w-full sm:w-auto uppercase font-extrabold tracking-wider text-xs sm:text-sm py-4 sm:py-6 px-7 rounded-full shadow-xl shadow-primary/30 group">
                 <Flame className="mr-2 h-4 w-4 text-white fill-white" />
-                QUERO SER ALUNA VIP
+                QUERO SER ALUNO VIP
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>

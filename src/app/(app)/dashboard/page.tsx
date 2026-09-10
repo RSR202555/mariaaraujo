@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function StudentDashboardPage() {
   const { user } = useAuth();
-  const firstName = user?.fullName ? user.fullName.split(" ")[0] : "Aluna";
+  const firstName = user?.fullName ? user.fullName.split(" ")[0] : "Aluno";
 
   return (
     <div className="space-y-8">

@@ -8,9 +8,9 @@ export default function AdminAlunasPage() {
     <div className="space-y-8">
       {/* Header Administrativo de Gestão de Alunas */}
       <PageHeader
-        badge="Gestão de Alunas VIP"
-        title="Gestão de Alunas"
-        description="Gerencie o cadastro de alunas, acompanhe o status dos contratos, avaliações, ficha de anamnese e montagem de treinos individualizados."
+        badge="Gestão de Alunos VIP"
+        title="Gestão de Alunos"
+        description="Gerencie o cadastro de alunos, acompanhe o status dos contratos, avaliações, ficha de anamnese e montagem de treinos individualizados."
       />
 
       {/* Tabela & Gestão Interativa */}

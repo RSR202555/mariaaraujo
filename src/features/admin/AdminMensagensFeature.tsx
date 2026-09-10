@@ -97,12 +97,12 @@ export function AdminMensagensFeature() {
               </span>
             </div>
 
-            {/* Campo de Busca de Aluna */}
+            {/* Campo de Busca de Aluno */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Buscar aluna por nome ou e-mail..."
+                placeholder="Buscar aluno por nome ou e-mail..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 bg-[#141414] border-[#262626] text-xs text-white rounded-xl focus:border-primary"
@@ -110,7 +110,7 @@ export function AdminMensagensFeature() {
             </div>
           </div>
 
-          {/* Lista Scrollável de Alunas */}
+          {/* Lista Scrollável de Alunos */}
           <div className="flex-1 overflow-y-auto divide-y divide-[#1a1a1a]">
             {filteredThreads.length === 0 ? (
               <div className="py-12 px-4 text-center text-xs text-muted-foreground space-y-2">

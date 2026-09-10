@@ -12,7 +12,7 @@ export default function AdminDashboardPage() {
       <PageHeader
         badge="Painel Administrativo VIP"
         title="Dashboard"
-        description="Bem-vinda, Maria. Hoje você possui um resumo completo da sua consultoria, alunas ativas e fila de prescrição."
+        description="Bem-vinda, Maria. Hoje você possui um resumo completo da sua consultoria, alunos ativos e fila de prescrição."
         actions={
           <div className="flex items-center space-x-3">
             <Button variant="outline" size="sm" className="rounded-full text-xs font-bold uppercase tracking-wider border-white/10">

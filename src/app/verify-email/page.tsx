@@ -11,7 +11,7 @@ export default function VerifyEmailPage() {
   return (
     <AuthCard
       title="Confirmação de Acesso"
-      subtitle="Validação do e-mail de cadastro de aluna VIP."
+      subtitle="Validação do e-mail de cadastro de aluno VIP."
       badgeText="Confirmação de E-mail"
     >
       <Suspense fallback={<div className="text-center py-4 text-xs text-muted-foreground">Carregando verificação...</div>}>

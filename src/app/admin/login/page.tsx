@@ -99,7 +99,7 @@ export default function AdminLogin() {
               <span className={styles.italicPink}>ADMIN.</span>
             </h1>
             <p className={styles.subtitle}>
-              Acesso exclusivo para gerenciamento de alunas, treinos e protocolos.
+              Acesso exclusivo para gerenciamento de alunos, treinos e protocolos.
             </p>
           </div>
 

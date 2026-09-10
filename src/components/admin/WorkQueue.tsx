@@ -100,7 +100,7 @@ export function WorkQueue({ items = [] }: WorkQueueProps) {
             Fila de Prescrição & Trabalho
           </h3>
           <p className="text-xs text-muted-foreground">
-            Alunas aguardando elaboração de ficha, treino e avaliação.
+            Alunos aguardando elaboração de ficha, treino e avaliação.
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export function WorkQueue({ items = [] }: WorkQueueProps) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar aluna..."
+              placeholder="Buscar aluno..."
               className="h-8 pl-8 pr-3 bg-[#090909] border border-[#262626] rounded-xl text-xs text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary"
             />
           </div>
@@ -136,7 +136,7 @@ export function WorkQueue({ items = [] }: WorkQueueProps) {
       {/* Clean Linear Data Rows or Empty State */}
       {filteredItems.length === 0 ? (
         <div className="p-8 text-center space-y-2">
-          <p className="text-sm font-semibold text-gray-300">Nenhuma aluna na fila de prescrição</p>
+          <p className="text-sm font-semibold text-gray-300">Nenhum aluno na fila de prescrição</p>
           <p className="text-xs text-muted-foreground">Novos cadastros e pedidos de ficha aparecerão aqui automaticamente.</p>
         </div>
       ) : (

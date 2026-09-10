@@ -19,7 +19,7 @@ type CaseStudy = {
     profissao: string;
     protocoloTreino: string;
     protocoloAlimentar: string;
-    depoimentoAluna: string;
+    depoimentoAluno: string;
     conquistas: string[];
   };
 };
@@ -52,7 +52,7 @@ export default function Resultados() {
         profissao: "Engenheira de Software",
         protocoloTreino: "Divisão ABC de hipertrofia com estímulos de densidade e cardio moderado pós-treino.",
         protocoloAlimentar: "Estratégia de intensificação e progressão contínua de carga.",
-        depoimentoAluna: "Achava impossível ter esses resultados com minha rotina corrida. A Maria reestruturou meu treino de forma cirúrgica!",
+        depoimentoAluno: "Achava impossível ter esses resultados com minha rotina corrida. A Maria reestruturou meu treino de forma cirúrgica!",
         conquistas: ["-15kg de gordura corporal eliminados", "Aumento de 4kg de massa muscular magra", "Redução de 14cm de cintura"],
       },
     },
@@ -70,7 +70,7 @@ export default function Resultados() {
         profissao: "Administrador",
         protocoloTreino: "Periodização ondulatória de alta intensidade com análise semanal de execução via vídeo.",
         protocoloAlimentar: "Periodização avançada com otimização de cargas e volume de treino.",
-        depoimentoAluna: "Estava estagnado há 2 anos. Em 5 meses de consultoria meu físico mudou da água para o vinho.",
+        depoimentoAluno: "Estava estagnado há 2 anos. Em 5 meses de consultoria meu físico mudou da água para o vinho.",
         conquistas: ["+8kg de massa magra densa", "Recorde pessoal nos treinos de força", "Percentual de gordura mantido em 10%"],
       },
     },
@@ -308,7 +308,7 @@ export default function Resultados() {
                 </div>
 
                 <div className="bg-[#090909] p-3.5 rounded-xl border border-white/5 italic text-xs text-gray-300">
-                  "{selectedCase.detailsModal.depoimentoAluna}"
+                  "{selectedCase.detailsModal.depoimentoAluno}"
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-end gap-2.5 pt-1">

@@ -16,10 +16,10 @@ export default function MensagensPage() {
     <div className="space-y-8">
       <PageHeader
         badge={isAdminRole ? "Painel de Atendimento Admin" : "Suporte Prioritário Direto"}
-        title={isAdminRole ? "Central de Mensagens das Alunas" : "Mensagens & Chat"}
+        title={isAdminRole ? "Central de Mensagens dos Alunos" : "Mensagens & Chat"}
         description={
           isAdminRole
-            ? "Responda as dúvidas das suas alunas VIP em tempo real com histórico unificado de conversas."
+            ? "Responda as dúvidas dos seus alunos VIP em tempo real com histórico unificado de conversas."
             : "Canal direto de comunicação com a Maria Araújo para tirar dúvidas sobre treinos, cargas e dieta."
         }
       />

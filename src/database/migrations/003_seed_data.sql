@@ -42,7 +42,7 @@ VALUES
     '33333333-3333-3333-3333-333333333333',
     'Protocolo Express',
     'protocolo-express',
-    'Plano focado em prescrição rápida de treino para alunas autônomas que buscam apenas organização dos seus treinos.',
+    'Plano focado em prescrição rápida de treino para alunos autônomos que buscam apenas organização dos seus treinos.',
     150.00,
     400.00,
     '[

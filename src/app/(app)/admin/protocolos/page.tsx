@@ -9,7 +9,7 @@ export default function AdminProtocolosPage() {
       <PageHeader
         badge="Prescrição de Treinos VIP"
         title="Protocolos & Treinos"
-        description="Elabore, gerencie e acompanhe todas as fichas de treino personalizadas enviadas para as alunas da consultoria."
+        description="Elabore, gerencie e acompanhe todas as fichas de treino personalizadas enviadas para os alunos da consultoria."
       />
 
       <ProtocolManagement />

@@ -3,7 +3,7 @@ import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 
 export const metadata = {
   title: "Recuperar Senha | Maria Araújo Personal",
-  description: "Recupere o acesso à sua conta de aluna VIP.",
+  description: "Recupere o acesso à sua conta de aluno VIP.",
 };
 
 export default function EsqueciSenhaPage() {
