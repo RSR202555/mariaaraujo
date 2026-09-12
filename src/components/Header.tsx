@@ -19,11 +19,11 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { name: "Resultados", href: "#resultados" },
-    { name: "Metodologia", href: "#metodologia" },
-    { name: "Consultorias", href: "#consultorias" },
-    { name: "Sobre", href: "#sobre" },
-    { name: "FAQ", href: "#faq" },
+    { name: "Resultados", href: "/#transformacoes" },
+    { name: "Metodologia", href: "/#metodologia" },
+    { name: "Consultorias", href: "/#consultorias" },
+    { name: "Sobre", href: "/#sobre" },
+    { name: "FAQ", href: "/#faq" },
   ];
 
   return (
@@ -35,25 +35,25 @@ export default function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        <a
-          href="#"
+        <Link
+          href="/"
           className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center"
           aria-label="Maria Araújo Personal Home"
         >
           MARIA ARAÚJO<span className="text-primary font-black">.</span>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden md:block" aria-label="Navegação Principal">
           <ul className="flex items-center space-x-8">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a
+                <Link
                   href={link.href}
                   className="text-xs font-bold uppercase tracking-widest text-[#B8B8B8] hover:text-white transition-colors"
                 >
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -91,7 +91,7 @@ export default function Header() {
           >
             <nav className="flex flex-col space-y-3" aria-label="Navegação Mobile">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="text-sm font-bold uppercase tracking-wider text-gray-200 hover:text-primary py-2.5 px-3 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-between"
@@ -99,7 +99,7 @@ export default function Header() {
                 >
                   <span>{link.name}</span>
                   <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </a>
+                </Link>
               ))}
               <div className="pt-4 border-t border-[#262626] space-y-2.5">
                 <Link
@@ -110,7 +110,7 @@ export default function Header() {
                   ÁREA DO ALUNO
                 </Link>
                 <a
-                  href="https://wa.me/5500000000000?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consultoria."
+                  href="https://wa.me/557192352255?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consultoria."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center space-x-2 text-xs font-bold uppercase tracking-wider text-gray-300 py-3 rounded-full bg-white/5 border border-white/10"

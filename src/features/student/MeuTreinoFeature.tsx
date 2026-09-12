@@ -143,7 +143,7 @@ export function MeuTreinoFeature() {
           </div>
 
           <a
-            href="https://wa.me/5511999999999?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20meu%20treino%20no%20MFIT."
+            href="https://wa.me/557192352255?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20meu%20treino%20no%20MFIT."
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto"

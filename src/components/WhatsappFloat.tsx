@@ -6,7 +6,7 @@ import { MessageSquareText } from "lucide-react";
 export default function WhatsappFloat() {
   return (
     <motion.a
-      href="https://wa.me/5500000000000?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consultoria."
+      href="https://wa.me/557192352255?text=Ol%C3%A1%20Maria!%20Gostaria%20de%20saber%20mais%20sobre%20a%20consultoria."
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-5 right-5 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 glow-pink hover:bg-primary/90 active:scale-95 transition-all duration-300 group"

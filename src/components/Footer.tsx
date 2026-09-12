@@ -47,7 +47,7 @@ export default function Footer() {
                 <span>@mariaaraujopersonal</span>
               </a>
               <a
-                href="https://wa.me/5500000000000"
+                href="https://wa.me/557192352255"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 hover:text-primary transition-colors"

@@ -237,7 +237,7 @@ export default function Consultorias() {
 
           <div>
             <a
-              href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20d%C3%BAvidas%20sobre%20os%20planos%20da%20consultoria."
+              href="https://wa.me/557192352255?text=Ol%C3%A1!%20Gostaria%20de%20tirar%20d%C3%BAvidas%20sobre%20os%20planos%20da%20consultoria."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-black font-black text-xs uppercase tracking-wider px-8 py-4 rounded-full shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"

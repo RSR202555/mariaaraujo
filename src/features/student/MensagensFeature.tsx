@@ -79,7 +79,7 @@ export function MensagensFeature() {
         </div>
 
         <a
-          href="https://wa.me/5511999999999?text=Ol%C3%A1%20Maria!%20D%C3%BAvida%20sobre%20minha%20consultoria."
+          href="https://wa.me/557192352255?text=Ol%C3%A1%20Maria!%20D%C3%BAvida%20sobre%20minha%20consultoria."
           target="_blank"
           rel="noopener noreferrer"
         >

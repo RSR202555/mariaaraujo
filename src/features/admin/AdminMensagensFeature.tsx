@@ -185,7 +185,7 @@ export function AdminMensagensFeature() {
               </div>
 
               <a
-                href={`https://wa.me/5511999999999?text=Ol%C3%A1%20${encodeURIComponent(
+                href={`https://wa.me/557192352255?text=Ol%C3%A1%20${encodeURIComponent(
                   activeThread.studentName
                 )}!%20Aqui%20%C3%A9%20a%20Maria%20Ara%C3%BAjo.`}
                 target="_blank"

@@ -316,7 +316,7 @@ export default function Resultados() {
                     Fechar
                   </Button>
                   <a
-                    href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Vi%20o%20estudo%20de%20caso%20e%20quero%20um%20resultado%20parecido."
+                    href="https://wa.me/557192352255?text=Ol%C3%A1!%20Vi%20o%20estudo%20de%20caso%20e%20quero%20um%20resultado%20parecido."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full sm:w-auto"
